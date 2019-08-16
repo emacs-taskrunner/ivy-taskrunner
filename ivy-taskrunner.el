@@ -69,7 +69,17 @@
 (require 'ivy)
 (require 'taskrunner)
 
+(defgroup ivy-taskrunner nil
+  "Group for ivy-taskrunner.")
+
 ;;;; Variables
+(defcustom ivy-taskrunner-project-warning
+  "The currently visited buffer must be in a project in order to select a task!
+   Please switch to a project which is recognized by projectile!"
+  "Warning used when the user tries to run ivy-taskrunner while
+not in a project which is recognized by projectile."
+  :group 'ivy-taskrunner
+  :type 'string)
 
 (defvaralias 'ivy-taskrunner-preferred-js-package-manager 'taskrunner-preferred-js-package-manager)
 (defvaralias 'ivy-taskrunner-get-all-make-targets 'taskrunner-retrieve-all-make-targets)
@@ -121,54 +131,50 @@ Prompt the user to supply extra arguments."
     )
   )
 
+(defun ivy-taskrunner--check-if-in-project ()
+  "Check if the currently visited buffer is in a project.
+If it is not, prompt the user to select a project"
+  ;; If we are not in a project, ask the user to switch to one
+  (if (not (projectile-project-p))
+      ;; If counsel is intalled, use that, otherwise use the default
+      ;; projectile-switch-project interface. The command returns
+      (if (package-installed-p 'counsel)
+          (progn
+            (require 'counsel)
+            (counsel-projectile-switch-project)))
+    (setq in-project-p (projectile-switch-project)))
+  )
+
 (defun ivy-taskrunner ()
   "Launch ivy to select a task to run in the current project."
   (interactive)
-  (let ((in-project-p (projectile-project-p)))
-    ;; If we are not in a project, ask the user to switch to one
-    (if (not in-project-p)
-        ;; If counsel is intalled, use that, otherwise use the default
-        ;; projectile-switch-project interface. The command returns
-        (if (package-installed-p 'counsel)
-            (setq in-project-p
-                  (progn
-                    (require 'counsel)
-                    (counsel-projectile-switch-project)))
-          (setq in-project-p (projectile-switch-project))))
-
-    ;; Run the ivy interface only if a user selects a project. If the user
-    ;; leaves the projectile-switch-project prompt then there is nothing
-    ;; returned and the value stays nil.
-    (when in-project-p
-      ;; Add extra actions
-      (ivy-set-actions
-       'ivy-taskrunner
-       ivy-taskrunner-actions)
-      
-      ;; Run ivy
-      (ivy-read "Task to run: "
-                (taskrunner-get-tasks-from-cache)
-                :require-match t
-                :action 'ivy-taskrunner--root-task))
+  (ivy-taskrunner--check-if-in-project)
+  ;; Run the ivy interface only if a user selects a project. If the user
+  ;; leaves the projectile-switch-project prompt then there is nothing
+  ;; returned and the value stays nil.
+  (if (projectile-project-p)
+      (progn
+        ;; Add extra actions
+        (ivy-set-actions
+         'ivy-taskrunner
+         ivy-taskrunner-actions)
+        
+        ;; Run ivy
+        (ivy-read "Task to run: "
+                  (taskrunner-get-tasks-from-cache)
+                  :require-match t
+                  :action 'ivy-taskrunner--root-task))
+    (message ivy-taskrunner-project-warning)
     )
   )
 
 (defun ivy-taskrunner-rerun-last-command ()
   "Rerun the last task ran in the currently visited project."
   (interactive)
-  (let ((in-project-p (projectile-project-p)))
-    ;; If we are not in a project, ask the user to switch to one
-    (if (not in-project-p)
-        ;; If counsel is intalled, use that, otherwise use the default
-        ;; projectile-switch-project interface. The command returns
-        (if (package-installed-p 'counsel)
-            (progn
-              (require 'counsel)
-              (setq in-project-p (counsel-projectile-switch-project)))
-          (setq in-project-p (projectile-switch-project))))
-    (when in-project-p
-      (taskrunner-rerun-last-task (projectile-project-root)))
-    )
+  (ivy-taskrunner--check-if-in-project)
+  (if (projectile-project-p)
+      (taskrunner-rerun-last-task (projectile-project-root))
+    (message ivy-taskrunner-project-warning))
   )
 
 (provide 'ivy-taskrunner)
