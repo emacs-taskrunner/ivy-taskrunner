@@ -143,5 +143,24 @@ Prompt the user to supply extra arguments."
     )
   )
 
+(defun ivy-taskrunner-rerun-last-command ()
+  "Rerun the last task ran in the currently visited project."
+  (interactive)
+  (let ((in-project-p (projectile-project-p)))
+    ;; If we are not in a project, ask the user to switch to one
+    (if (not in-project-p)
+        ;; If counsel is intalled, use that, otherwise use the default
+        ;; projectile-switch-project interface. The command returns
+        (if (package-installed-p 'counsel)
+            (setq in-project-p
+                  (progn
+                    (require 'counsel)
+                    (counsel-projectile-switch-project)))
+          (setq in-project-p (projectile-switch-project))))
+    (when in-project-p
+      (taskrunner-rerun-last-task (projectile-project-root)))
+    )
+  )
+
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
