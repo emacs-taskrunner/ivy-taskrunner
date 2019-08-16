@@ -71,6 +71,14 @@
 
 ;;;; Variables
 
+(defvaralias 'ivy-taskrunner-preferred-js-package-manager 'taskrunner-preferred-js-package-manager)
+(defvaralias 'ivy-taskrunner-get-all-make-targets 'taskrunner-retrieve-all-make-targets)
+(defvaralias 'ivy-taskrunner-leiningen-buffer-name 'taskrunner-leiningen-buffer-name)
+(defvaralias 'ivy-taskrunner-leiningen-task-section-regexp 'taskrunner-leiningen-task-section-header-regexp)
+(defvaralias 'ivy-taskrunner-gradle-taskbuffer-name 'taskrunner-gradle-tasks-buffer-name)
+(defvaralias 'ivy-taskrunner-gradle-heading-regexps 'taskrunner-gradle-heading-regexps)
+(defvaralias 'ivy-taskrunner-ant-tasks-buffer-name 'taskrunner-ant-tasks-buffer-name)
+
 ;; Users can add additional actions by appending to this variable
 (defvar ivy-taskrunner-actions
   '(("r" ivy-taskrunner--root-task "Run task in root without extra args")
