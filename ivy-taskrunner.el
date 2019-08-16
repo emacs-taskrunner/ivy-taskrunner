@@ -34,7 +34,9 @@
 
 ;; When in any buffer, either call the command `ivy-taskrunner' or
 ;; `ivy-taskrunner-update-cache' to be presented with a list of targets/tasks in
-;; your project
+;; your project.
+;; Additionally, if you would like to rerun the last ran command, use
+;; `ivy-taskrunner-rerun-last-command'.
 
 ;;;; Credits
 
@@ -152,10 +154,9 @@ Prompt the user to supply extra arguments."
         ;; If counsel is intalled, use that, otherwise use the default
         ;; projectile-switch-project interface. The command returns
         (if (package-installed-p 'counsel)
-            (setq in-project-p
-                  (progn
-                    (require 'counsel)
-                    (counsel-projectile-switch-project)))
+            (progn
+              (require 'counsel)
+              (setq in-project-p (counsel-projectile-switch-project)))
           (setq in-project-p (projectile-switch-project))))
     (when in-project-p
       (taskrunner-rerun-last-task (projectile-project-root)))
