@@ -103,33 +103,25 @@ not in a project which is recognized by projectile."
 (defun ivy-taskrunner--root-task (TASK)
   "Run the task TASK in the project root without asking for extra args.
 This is the default command when selecting/running a task/target."
-  (taskrunner-run-task TASK)
-  )
+  (taskrunner-run-task TASK))
 
 (defun ivy-taskrunner--root-task-prompt (TASK)
   "Run the task TASK in the project root and ask the user for extra args."
-  (taskrunner-run-task TASK nil t)
-  )
+  (taskrunner-run-task TASK nil t))
 
 (defun ivy-taskrunner--current-dir (TASK)
   "Run the task TASK in the directory visited by the current buffer.
 Do not prompt the user to supply any extra arguments."
   (let ((curr-file (buffer-file-name)))
     (when curr-file
-      ;; (message "FILENAME: %s Task: %s" (file-name-directory curr-file) TASK)
-      (taskrunner-run-task TASK (file-name-directory curr-file) nil))
-    )
-  )
+      (taskrunner-run-task TASK (file-name-directory curr-file) nil))))
 
 (defun ivy-taskrunner--current-dir-prompt (TASK)
   "Run the task TASK in the directory visited by the current buffer.
 Prompt the user to supply extra arguments."
   (let ((curr-file (buffer-file-name)))
     (when curr-file
-      ;; (message "FILENAME: %s Task: %s" (file-name-directory curr-file) TASK)
-      (taskrunner-run-task TASK (file-name-directory curr-file) t))
-    )
-  )
+      (taskrunner-run-task TASK (file-name-directory curr-file) t))))
 
 (defun ivy-taskrunner--check-if-in-project ()
   "Check if the currently visited buffer is in a project.
@@ -142,8 +134,7 @@ If it is not, prompt the user to select a project"
           (progn
             (require 'counsel)
             (counsel-projectile-switch-project)))
-    (setq in-project-p (projectile-switch-project)))
-  )
+    (setq in-project-p (projectile-switch-project))))
 
 (defun ivy-taskrunner ()
   "Launch ivy to select a task to run in the current project."
@@ -164,9 +155,13 @@ If it is not, prompt the user to select a project"
                   (taskrunner-get-tasks-from-cache)
                   :require-match t
                   :action 'ivy-taskrunner--root-task))
-    (message ivy-taskrunner-project-warning)
-    )
-  )
+    (message ivy-taskrunner-project-warning)))
+
+(defun ivy-taskrunner-update-cache ()
+  "Refresh the task cache for the current project and show all tasks."
+  (interactive)
+  (taskrunner-refresh-cache)
+  (ivy-taskrunner))
 
 (defun ivy-taskrunner-rerun-last-command ()
   "Rerun the last task ran in the currently visited project."
@@ -174,8 +169,7 @@ If it is not, prompt the user to select a project"
   (ivy-taskrunner--check-if-in-project)
   (if (projectile-project-p)
       (taskrunner-rerun-last-task (projectile-project-root))
-    (message ivy-taskrunner-project-warning))
-  )
+    (message ivy-taskrunner-project-warning)))
 
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
