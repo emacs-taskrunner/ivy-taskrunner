@@ -32,10 +32,12 @@
 
 ;;;; Usage
 
-;; When in any buffer, either call the command `ivy-taskrunner' or
-;; `ivy-taskrunner-update-cache' to be presented with a list of targets/tasks in
-;; your project.
-;; Additionally, if you would like to rerun the last ran command, use
+;; When in any buffer recognized by projectile, call the command
+;; `ivy-taskrunner' to launch an ivy menu which shows all possible tasks/targets
+;; in the project. If you add new tasks then call `ivy-taskrunner-update-cache'
+;; to make sure that the newly added commands will be shown.  You can use the
+;; command `ivy-taskrunner-task-buffers' to show all buffers which were used to
+;; run a task Additionally, if you would like to rerun the last ran command, use
 ;; `ivy-taskrunner-rerun-last-command'.
 
 ;;;; Credits
@@ -70,14 +72,14 @@
 (require 'taskrunner)
 
 (defgroup ivy-taskrunner nil
-  "Group for ivy-taskrunner.")
+  "Group for ivy-taskrunner."
+  :group 'convenience)
 
 ;;;; Variables
 (defcustom ivy-taskrunner-project-warning
   "The currently visited buffer must be in a project in order to select a task!
    Please switch to a project which is recognized by projectile!"
-  "Warning used when the user tries to run ivy-taskrunner while
-not in a project which is recognized by projectile."
+  "Warning to indicate that a project must be visited to call ivy-taskrunner."
   :group 'ivy-taskrunner
   :type 'string)
 
@@ -114,7 +116,7 @@ not in a project which is recognized by projectile."
   "Kill the buffer name BUFFER-NAME."
   (kill-buffer BUFFER-NAME))
 
-(defun ivy-taskrunner--kill-all-buffers (TEMP)
+(defun ivy-taskrunner--kill-all-buffers ()
   "Kill all helm-taskrunner task buffers.
 The argument TEMP is simply there since a Helm action requires a function with
 one input."
@@ -154,7 +156,7 @@ If it is not, prompt the user to select a project"
           (progn
             (require 'counsel)
             (counsel-projectile-switch-project)))
-    (setq in-project-p (projectile-switch-project))))
+    (projectile-switch-project)))
 
 (defun ivy-taskrunner ()
   "Launch ivy to select a task to run in the current project."
