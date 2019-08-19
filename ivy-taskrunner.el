@@ -206,9 +206,7 @@ If it is not, prompt the user to select a project"
                     taskrunner-buffers
                     :require-match t
                     :action 'switch-to-buffer))
-      (message ivy-taskrunner-no-buffers-warning))
-    )
-  )
+      (message ivy-taskrunner-no-buffers-warning))))
 
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
