@@ -34,7 +34,7 @@
 
 ;; When in any buffer recognized by projectile, call the command
 ;; `ivy-taskrunner' to launch an ivy menu which shows all possible tasks/targets
-;; in the project. If you add new tasks then call `ivy-taskrunner-update-cache'
+;; in the project.  If you add new tasks then call `ivy-taskrunner-update-cache'
 ;; to make sure that the newly added commands will be shown.  You can use the
 ;; command `ivy-taskrunner-task-buffers' to show all buffers which were used to
 ;; run a task Additionally, if you would like to rerun the last ran command, use
@@ -152,9 +152,9 @@ If it is not, prompt the user to select a project"
   (if (not (projectile-project-p))
       ;; If counsel is intalled, use that, otherwise use the default
       ;; projectile-switch-project interface. The command returns
-      (if (package-installed-p 'counsel)
+      (if (package-installed-p 'counsel-projectile)
           (progn
-            (require 'counsel)
+            (require 'counsel-projectile)
             (counsel-projectile-switch-project)))
     (projectile-switch-project)))
 
