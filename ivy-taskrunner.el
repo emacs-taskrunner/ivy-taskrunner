@@ -89,6 +89,10 @@ not in a project which is recognized by projectile."
 (defvaralias 'ivy-taskrunner-gradle-heading-regexps 'taskrunner-gradle-heading-regexps)
 (defvaralias 'ivy-taskrunner-ant-tasks-buffer-name 'taskrunner-ant-tasks-buffer-name)
 
+(defconst ivy-taskrunner-no-buffers-warning
+  "ivy-taskrunner: No taskrunner buffers are currently opened!"
+  "Warning used to indicate that there are not task buffers opened.")
+
 ;; Users can add additional actions by appending to this variable
 (defvar ivy-taskrunner-actions
   '(("r" ivy-taskrunner--root-task "Run task in root without extra args")
@@ -98,7 +102,23 @@ not in a project which is recognized by projectile."
     )
   "A list of extra actions which can be used when running a task selected through ivy.")
 
+(defvar ivy-taskrunner-buffer-actions
+  '(("s" switch-to-buffer "Switch to buffer")
+    ("k" ivy-taskrunner--kill-buffer "Kill buffer")
+    ("K" ivy-taskrunner--kill-all-buffers "Kill all buffers"))
+  "A list of extra actions used when selecting a compilation buffer through ivy.")
+
 ;;;; Functions
+
+(defun ivy-taskrunner--kill-buffer (BUFFER-NAME)
+  "Kill the buffer name BUFFER-NAME."
+  (kill-buffer BUFFER-NAME))
+
+(defun ivy-taskrunner--kill-all-buffers (TEMP)
+  "Kill all helm-taskrunner task buffers.
+The argument TEMP is simply there since a Helm action requires a function with
+one input."
+  (taskrunner-kill-compilation-buffers))
 
 (defun ivy-taskrunner--root-task (TASK)
   "Run the task TASK in the project root without asking for extra args.
@@ -140,9 +160,9 @@ If it is not, prompt the user to select a project"
   "Launch ivy to select a task to run in the current project."
   (interactive)
   (ivy-taskrunner--check-if-in-project)
-  ;; Run the ivy interface only if a user selects a project. If the user
-  ;; leaves the projectile-switch-project prompt then there is nothing
-  ;; returned and the value stays nil.
+  ;; Run the ivy interface only if a user selects a project. If the user leaves
+  ;; the projectile-switch-project prompt then there is nothing returned and the
+  ;; value stays nil.
   (if (projectile-project-p)
       (progn
         ;; Add extra actions
@@ -170,6 +190,25 @@ If it is not, prompt the user to select a project"
   (if (projectile-project-p)
       (taskrunner-rerun-last-task (projectile-project-root))
     (message ivy-taskrunner-project-warning)))
+
+(defun ivy-taskrunner-task-buffers ()
+  "Show all ivy-taskrunner buffers."
+  (interactive)
+  (let ((taskrunner-buffers (taskrunner-get-compilation-buffers)))
+
+    (if taskrunner-buffers
+        (progn
+          ;; Add extra actions
+          (ivy-set-actions
+           'ivy-taskrunner-task-buffers
+           ivy-taskrunner-buffer-actions)
+          (ivy-read "Buffer to open: "
+                    taskrunner-buffers
+                    :require-match t
+                    :action 'switch-to-buffer))
+      (message ivy-taskrunner-no-buffers-warning))
+    )
+  )
 
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
