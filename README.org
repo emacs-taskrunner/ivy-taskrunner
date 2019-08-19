@@ -1,0 +1,38 @@
+* ivy-taskrunner
+Ivy-taskrunner is a ivy interface to the [[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner]] library. It provides
+a convenient way to select targets/tasks within the current project and run them
+in a custom compilation buffer.
+
+The majority of the tasks/targets are gathered by either parsing
+files(makefiles) or parsing the output of the taskrunner/build systems. This can
+sometimes be a bit slow but this is made to be a (usually) one time cost. All
+tasks retrieved are saved in a cache which persists after an emacs instance is
+killed and then loaded up again when emacs/ivy-taskrunner is started.
+* Installation
+** MELPA
+This package will be submitted to melpa shortly.
+** Manually
+To install this package, you will need the following:
+-[[https://github.com/bbatsov/projectile][ projectile]] 
+- [[https://github.com/abo-abo/swiper][ivy/swiper]]
+- [[https://github.com/ericdanan/counsel-projectile][(OPTIONAL) counsel-projectile]] 
+- [[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner]]
+* Usage
+* Supported build/taskrunner systems
+The following systems are currently supported:
+- [X] yarn/npm
+- [X] Gulp
+- [X] Grunt
+- [X] Gradle
+- [X] Jake
+- [X] Apache ant
+- [X] mix
+- [X] leinengen
+- [X] rake
+- [X] cargo(Rust)
+- [X] go(Golang)
+- [X] Cask
+- [X] Make
+- [X] CMake
+- [X] stack
+- [X] cabal
