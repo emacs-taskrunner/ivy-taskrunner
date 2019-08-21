@@ -210,5 +210,9 @@ If it is not, prompt the user to select a project"
                     :action 'switch-to-buffer))
       (message ivy-taskrunner-no-buffers-warning))))
 
+(defun ivy-taskrunner-kill-all-buffers ()
+  "Kill all ivy-taskrunner compilation buffers."
+  (taskrunner-kill-compilation-buffers))
+
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
