@@ -83,6 +83,12 @@
   :group 'ivy-taskrunner
   :type 'string)
 
+(defcustom ivy-taskrunner-no-files-found-warning
+  "ivy-taskrunner: There are no configuration files for any taskrunner/build system in the current project."
+  "Warning used to indicate that no configuration files were found in the current project."
+  :group 'ivy-taskrunner
+  :type 'string)
+
 (defvaralias 'ivy-taskrunner-preferred-js-package-manager 'taskrunner-preferred-js-package-manager)
 (defvaralias 'ivy-taskrunner-get-all-make-targets 'taskrunner-retrieve-all-make-targets)
 (defvaralias 'ivy-taskrunner-leiningen-buffer-name 'taskrunner-leiningen-buffer-name)
@@ -244,7 +250,8 @@ This function is meant to be used with helm only."
                              (car elem))
                      ivy-taskrunner--project-files)
                 :require-match t
-                :action 'ivy-taskrunner--select-system))
+                :action 'ivy-taskrunner--select-system)
+    (message ivy-taskrunner-no-files-found-warning))
   )
 
 (defun ivy-taskrunner-kill-all-buffers ()
