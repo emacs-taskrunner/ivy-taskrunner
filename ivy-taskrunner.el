@@ -168,6 +168,7 @@ If it is not, prompt the user to select a project"
         (projectile-switch-project))
     t))
 
+;;;###autoload
 (defun ivy-taskrunner ()
   "Launch ivy to select a task to run in the current project."
   (interactive)
@@ -189,12 +190,14 @@ If it is not, prompt the user to select a project"
                   :action 'ivy-taskrunner--root-task))
     (message ivy-taskrunner-project-warning)))
 
+;;;###autoload
 (defun ivy-taskrunner-update-cache ()
   "Refresh the task cache for the current project and show all tasks."
   (interactive)
   (taskrunner-refresh-cache)
   (ivy-taskrunner))
 
+;;;###autoload
 (defun ivy-taskrunner-rerun-last-command ()
   "Rerun the last task ran in the currently visited project."
   (interactive)
@@ -203,6 +206,7 @@ If it is not, prompt the user to select a project"
       (taskrunner-rerun-last-task (projectile-project-root))
     (message ivy-taskrunner-project-warning)))
 
+;;;###autoload
 (defun ivy-taskrunner-task-buffers ()
   "Show all ivy-taskrunner buffers."
   (interactive)
@@ -219,6 +223,11 @@ If it is not, prompt the user to select a project"
                     :require-match t
                     :action 'switch-to-buffer))
       (message ivy-taskrunner-no-buffers-warning))))
+
+;;;###autoload
+(defun ivy-taskrunner-kill-all-buffers ()
+  "Kill all ivy-taskrunner compilation buffers."
+  (taskrunner-kill-compilation-buffers))
 
 (defun ivy-taskrunner--open-file (FILENAME)
   "Open the file FILENAME.
@@ -240,6 +249,7 @@ This function is meant to be used with helm only."
     )
   )
 
+;;;###autoload
 (defun ivy-taskrunner-config-files ()
   "Open the configuration files(if any are present) at project root."
   (interactive)
@@ -255,9 +265,6 @@ This function is meant to be used with helm only."
     (message ivy-taskrunner-no-files-found-warning))
   )
 
-(defun ivy-taskrunner-kill-all-buffers ()
-  "Kill all ivy-taskrunner compilation buffers."
-  (taskrunner-kill-compilation-buffers))
 
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
