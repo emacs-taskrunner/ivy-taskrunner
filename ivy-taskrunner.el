@@ -95,6 +95,9 @@
   "ivy-taskrunner: No taskrunner buffers are currently opened!"
   "Warning used to indicate that there are not task buffers opened.")
 
+(defvar ivy-taskrunner--project-files '()
+  "Used to store the project files and their paths.")
+
 ;; Users can add additional actions by appending to this variable
 (defvar ivy-taskrunner-actions
   '(("r" ivy-taskrunner--root-task "Run task in root without extra args")
@@ -209,6 +212,40 @@ If it is not, prompt the user to select a project"
                     :require-match t
                     :action 'switch-to-buffer))
       (message ivy-taskrunner-no-buffers-warning))))
+
+(defun ivy-taskrunner--open-file (FILENAME)
+  "Open the file FILENAME.
+This function is meant to be used with helm only."
+  (setq ivy-taskrunner--project-files  (car (alist-get (intern FILENAME) ivy-taskrunner--project-files)))
+  (find-file ivy-taskrunner--project-files))
+
+(defun ivy-taskrunner--select-system (SYS)
+  "Retrieve the files for the taskrunner/build system SYS."
+  (setq ivy-taskrunner--project-files   (car (alist-get (intern SYS) ivy-taskrunner--project-files)))
+  (if (stringp ivy-taskrunner--project-files)
+      (find-file ivy-taskrunner--project-files)
+    (ivy-read "Select a file: "
+              (map 'list (lambda (elem)
+                           (car elem))
+                   ivy-taskrunner--project-files)
+              :require-match t
+              :action 'ivy-taskrunner--open-file)
+    )
+  )
+
+(defun ivy-taskrunner-config-files ()
+  "Open the configuration files(if any are present) at project root."
+  (interactive)
+  ;; (ivy-taskrunner--check-if-in-project)
+  (setq ivy-taskrunner--project-files (taskrunner-collect-taskrunner-files (projectile-project-root)))
+  (if ivy-taskrunner--project-files
+      (ivy-read "Select build system: "
+                (map 'list (lambda (elem)
+                             (car elem))
+                     ivy-taskrunner--project-files)
+                :require-match t
+                :action 'ivy-taskrunner--select-system))
+  )
 
 (defun ivy-taskrunner-kill-all-buffers ()
   "Kill all ivy-taskrunner compilation buffers."
