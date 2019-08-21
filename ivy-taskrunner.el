@@ -164,8 +164,9 @@ If it is not, prompt the user to select a project"
       (if (package-installed-p 'counsel-projectile)
           (progn
             (require 'counsel-projectile)
-            (counsel-projectile-switch-project)))
-    (projectile-switch-project)))
+            (counsel-projectile-switch-project))
+        (projectile-switch-project))
+    t))
 
 (defun ivy-taskrunner ()
   "Launch ivy to select a task to run in the current project."
@@ -242,7 +243,7 @@ This function is meant to be used with helm only."
 (defun ivy-taskrunner-config-files ()
   "Open the configuration files(if any are present) at project root."
   (interactive)
-  ;; (ivy-taskrunner--check-if-in-project)
+  (ivy-taskrunner--check-if-in-project)
   (setq ivy-taskrunner--project-files (taskrunner-collect-taskrunner-files (projectile-project-root)))
   (if ivy-taskrunner--project-files
       (ivy-read "Select build system: "
