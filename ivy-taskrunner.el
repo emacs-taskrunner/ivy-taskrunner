@@ -24,6 +24,7 @@
 
 ;; projectile
 ;; taskrunner
+;; async
 ;; ivy
 
 ;; Then put this folder in your load-path, and put this in your init:
@@ -86,6 +87,12 @@
 (defcustom ivy-taskrunner-no-files-found-warning
   "ivy-taskrunner: There are no configuration files for any taskrunner/build system in the current project."
   "Warning used to indicate that no configuration files were found in the current project."
+  :group 'ivy-taskrunner
+  :type 'string)
+
+(defcustom ivy-taskrunner-no-targets-found-warning
+  "ivy-taskrunner: No targets found in the current project!"
+  "Warning used to indicate that no targets were found."
   :group 'ivy-taskrunner
   :type 'string)
 
@@ -168,26 +175,55 @@ If it is not, prompt the user to select a project"
         (projectile-switch-project))
     t))
 
-;;;###autoload
-(defun ivy-taskrunner ()
-  "Launch ivy to select a task to run in the current project."
-  (interactive)
-  (ivy-taskrunner--check-if-in-project)
-  ;; Run the ivy interface only if a user selects a project. If the user leaves
-  ;; the projectile-switch-project prompt then there is nothing returned and the
-  ;; value stays nil.
-  (if (projectile-project-p)
+(defun ivy-taskrunner--run-ivy (TARGETS)
+  "Run an instance of ivy with TARGETS as choices.
+If targets is nil then display an error message without running Helm.
+TARGETS should be a list of the form:
+\(cache-status project-directory project-tasks)
+where cache-status indicates if the project tasks are in the cache,
+project-directory is the directory of the project and project-tasks
+are the tasks for that project."
+  (let ((cache-status (car TARGETS))
+        (proj-dir (cadr TARGETS))
+        (proj-tasks (caddr TARGETS))
+        )
+    (if (null proj-tasks)
+        (message ivy-taskrunner-no-targets-found-warning)
       (progn
-        ;; Add extra actions
+        ;; If the tasks are not in the cache then add them
+        (when (null cache-status)
+          (taskrunner-add-to-tasks-cache proj-dir proj-tasks))
+
+        ;; Add extra actions for ivy
         (ivy-set-actions
          'ivy-taskrunner
          ivy-taskrunner-actions)
         
         ;; Run ivy
         (ivy-read "Task to run: "
-                  (taskrunner-get-tasks-from-cache)
+                  proj-tasks
                   :require-match t
-                  :action 'ivy-taskrunner--root-task))
+                  :action 'ivy-taskrunner--root-task)))))
+
+;;;###autoload
+(defun ivy-taskrunner ()
+  "Launch ivy to select a task to run in the current project.
+This command runs asynchronously so the ivy prompt might not show
+for several seconds."
+  (interactive)
+  (ivy-taskrunner--check-if-in-project)
+  ;; Run the ivy interface only if a user selects a project.
+  (if (projectile-project-p)
+      (async-start
+       `(lambda ()
+          ;; inject the load path so we can find taskrunner
+          ,(async-inject-variables "\\`load-path\\'")
+          ,(async-inject-variables "taskrunner-.*")
+          (require 'cl)
+          (require 'taskrunner)
+          (taskrunner-get-tasks-from-cache-async)
+          )
+       'ivy-taskrunner--run-ivy)
     (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
