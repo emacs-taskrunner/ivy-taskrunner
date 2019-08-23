@@ -14,7 +14,7 @@ This package will be submitted to melpa shortly.
 ** Manually
 To install this package, you will need the following:
 
--[[https://github.com/bbatsov/projectile][ projectile]] 
+- [[https://github.com/bbatsov/projectile][projectile]] 
 - [[https://github.com/abo-abo/swiper][ivy/swiper]]
 - [[https://github.com/ericdanan/counsel-projectile][(OPTIONAL) counsel-projectile]] 
 - [[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner]]
