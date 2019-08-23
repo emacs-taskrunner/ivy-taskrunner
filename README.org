@@ -18,6 +18,55 @@ To install this package, you will need the following:
 - [[https://github.com/ericdanan/counsel-projectile][(OPTIONAL) counsel-projectile]] 
 - [[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner]]
 * Usage
+There are several entry points for this package:
+- ~ivy-taskrunner~: This function gathers all of the tasks from the
+  taskrunners/build systems at the project root asynchronously. The tasks
+  gathered are then presented in a ivy buffer where the user can select one of
+  them to run. The tasks can be ran in 6 different places:
+  - at project root
+  - at project root with extra arguments supplied by the user
+  - at directory visited by the current buffer
+  - at directory visited by the current buffer with extra arguments supplied by
+    the user
+  - at a custom directory selected by the user
+  - at a custom directory selected by the user with extra arguments supplied by
+    the user
+    
+    *Warning*: This function is asynchronous so the tasks might now appear for a
+    few seconds. You are free to continue working until they do. If for some
+    reason no tasks can be located, an error message will be displayed in the
+    echo buffer.
+- ~ivy-taskrunner-buffers~: Every time a command is ran, a new buffer is spawned
+  containing that commands output. This command displays a ivy buffer letting
+  the user select one of these command buffers and use an action on it. There
+  are three main choices:
+  - Open buffer
+  - Kill buffer
+  - Kill all command buffers
+- ~ivy-taskrunner-kill-all-buffers~: Kill all command buffers.
+- ~ivy-taskrunner-config-files~: The majority of taskrunner/build systems have
+  some type of a configuration file associate with them(Make -> Makefile, Grunt
+  -> gruntfile and so on...). When this function is invoked, a ivy buffer will
+  display all configuration files for all build/taskrunner systems detected at
+  project root. The user can then select one of them and the file will be
+  opened. This function will also work for build/taskrunner systems which have
+  multiple configuration files(ex. Gradle or Cabal). If this is the case then
+  the user will be presented with all possible such files and will again be able
+  to select one of them to open.
+- ~ivy-taskrunner-rerun-last-command~: When invoked, this function will rerun the
+  last command ran in the project. The command is ran in the same directory as
+  before so if a different directory than the project root was selected, the
+  command will be ran there again.
+- ~ivy-taskrunner-update-cache~: To speed up the task process and minimize wait
+  time for the user, ivy-taskrunner uses a cache for targets/tasks
+  collected. When the ~ivy-taskrunner~ command is called, the cache is
+  checked. If the tasks have been cached then they are returned immediately and
+  displayed to the user. Sometimes, more tasks can be added to the configuration
+  files of the taskrunner/build system and they will not be displayed. When this
+  command is called, the cache is overwritten and the tasks are gathered all
+  over again and displayed to the user. If you have added new tasks and do not
+  see them then call this function to update the cache and include them for
+  selection.
 * Supported build/taskrunner systems
 The following systems are currently supported:
 - [X] yarn/npm
@@ -29,10 +78,20 @@ The following systems are currently supported:
 - [X] mix
 - [X] leinengen
 - [X] rake
-- [X] cargo(Rust)
-- [X] go(Golang)
-- [X] Cask
 - [X] Make
 - [X] CMake
-- [X] stack
-- [X] cabal
+- [X] [[https://github.com/go-task/task][go-task]] 
+- [X] [[https://github.com/magefile/mage][mage]] 
+- [X] [[https://github.com/pydoit/doit][doit]] 
+- [X] [[https://github.com/jakedeichert/mask][mask]] 
+- [X] [[https://github.com/casey/just][just]] 
+- [X] [[https://github.com/sagiegurari/cargo-make][cargo-make]]
+- [X] cargo(Limited Support)
+- [X] go compiler(Limited support)
+- [X] Cask(Limited Support)
+- [X] stack(Limited Support)
+- [X] cabal(Limited Support)
+* Bug Reports and Echancement Requests
+If you have a bug report related to the user interface then please submit it
+here. Otherwise, all other bug reports and echancement requests should go to the
+[[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner repository]].
