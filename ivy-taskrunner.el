@@ -281,9 +281,7 @@ This function is meant to be used with helm only."
                            (car elem))
                    ivy-taskrunner--project-files)
               :require-match t
-              :action 'ivy-taskrunner--open-file)
-    )
-  )
+              :action 'ivy-taskrunner--open-file)))
 
 ;;;###autoload
 (defun ivy-taskrunner-config-files ()
@@ -298,9 +296,7 @@ This function is meant to be used with helm only."
                      ivy-taskrunner--project-files)
                 :require-match t
                 :action 'ivy-taskrunner--select-system)
-    (message ivy-taskrunner-no-files-found-warning))
-  )
-
+    (message ivy-taskrunner-no-files-found-warning)))
 
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
