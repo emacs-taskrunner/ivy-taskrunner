@@ -13,10 +13,12 @@ killed and then loaded up again when emacs/ivy-taskrunner is started.
 This package will be submitted to melpa shortly.
 ** Manually
 To install this package, you will need the following:
+
 -[[https://github.com/bbatsov/projectile][ projectile]] 
 - [[https://github.com/abo-abo/swiper][ivy/swiper]]
 - [[https://github.com/ericdanan/counsel-projectile][(OPTIONAL) counsel-projectile]] 
 - [[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner]]
+- [[https://github.com/jwiegley/emacs-async][emacs-async]] 
 * Usage
 There are several entry points for this package:
 - ~ivy-taskrunner~: This function gathers all of the tasks from the
