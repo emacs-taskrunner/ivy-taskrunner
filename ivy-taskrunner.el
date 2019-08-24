@@ -112,15 +112,17 @@ Please switch to a project which is recognized by projectile!"
   "Used to store the project files and their paths.")
 
 ;; Users can add additional actions by appending to this variable
-(defvar ivy-taskrunner-actions
+(defconst ivy-taskrunner-actions
   '(("r" ivy-taskrunner--root-task "Run task in root without extra args")
     ("R" ivy-taskrunner--root-task-prompt "Run task in root with extra args")
     ("c" ivy-taskrunner--current-dir "Run task in current folder without args")
     ("C" ivy-taskrunner--current-dir-prompt "Run task in current folder with args")
+    ("s" ivy-taskrunner--select-dir "Run task in another directory")
+    ("S" ivy-taskrunner--select-dir-prompt "Run task in another directory with args")
     )
   "A list of extra actions which can be used when running a task selected through ivy.")
 
-(defvar ivy-taskrunner-buffer-actions
+(defconst ivy-taskrunner-buffer-actions
   '(("s" switch-to-buffer "Switch to buffer")
     ("k" ivy-taskrunner--kill-buffer "Kill buffer")
     ("K" ivy-taskrunner--kill-all-buffers "Kill all buffers"))
@@ -160,6 +162,20 @@ Prompt the user to supply extra arguments."
   (let ((curr-file (buffer-file-name)))
     (when curr-file
       (taskrunner-run-task TASK (file-name-directory curr-file) t))))
+
+(defun ivy-taskrunner--select-dir (TASK)
+  "Run the task TASK in a directory chosen by the user."
+  (let ((command-directory (read-directory-name "Directory: " (projectile-project-root))))
+    (message command-directory)
+    (when command-directory
+      (taskrunner-run-task TASK command-directory))))
+
+(defun ivy-taskrunner--select-dir-prompt (TASK)
+  "Run the task TASK in a directory chosen by the user.
+Prompt the user to supply extra arguments."
+  (let ((command-directory (read-directory-name "Directory: " (projectile-project-root))))
+    (when command-directory
+      (taskrunner-run-task TASK command-directory t))))
 
 (defun ivy-taskrunner--check-if-in-project ()
   "Check if the currently visited buffer is in a project.
