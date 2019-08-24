@@ -175,6 +175,22 @@ If it is not, prompt the user to select a project"
         (projectile-switch-project))
     t))
 
+
+(defun ivy-taskrunner--run-ivy-for-targets (TARGETS)
+  (if (null TARGETS)
+      (message ivy-taskrunner-no-targets-found-warning)
+    (progn
+      ;; Add extra actions for ivy
+      (ivy-set-actions
+       'ivy-taskrunner
+       ivy-taskrunner-actions)
+      
+      ;; Run ivy
+      (ivy-read "Task to run: "
+                TARGETS
+                :require-match t
+                :action 'ivy-taskrunner--root-task))))
+
 ;;;###autoload
 (defun ivy-taskrunner ()
   "Launch ivy to select a task to run in the current project.
@@ -184,28 +200,18 @@ for several seconds."
   (ivy-taskrunner--check-if-in-project)
   ;; Run the ivy interface only if a user selects a project.
   (if (projectile-project-p)
-      (taskrunner-get-tasks-async (lambda (TARGETS)
-                                    (if (null TARGETS)
-                                        (message ivy-taskrunner-no-targets-found-warning)
-                                      (progn
-                                        ;; Add extra actions for ivy
-                                        (ivy-set-actions
-                                         'ivy-taskrunner
-                                         ivy-taskrunner-actions)
-                                        
-                                        ;; Run ivy
-                                        (ivy-read "Task to run: "
-                                                  TARGETS
-                                                  :require-match t
-                                                  :action 'ivy-taskrunner--root-task)))))
+      (taskrunner-get-tasks-async 'ivy-taskrunner--run-ivy-for-targets)
     (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
 (defun ivy-taskrunner-update-cache ()
   "Refresh the task cache for the current project and show all tasks."
   (interactive)
-  (taskrunner-refresh-cache)
-  (ivy-taskrunner))
+  (ivy-taskrunner--check-if-in-project)
+  ;; Run the ivy interface only if a user selects a project.
+  (if (projectile-project-p)
+      (taskrunner-refresh-cache-async 'ivy-taskrunner--run-ivy-for-targets)
+    (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
 (defun ivy-taskrunner-rerun-last-command ()
