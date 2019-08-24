@@ -79,7 +79,7 @@
 ;;;; Variables
 (defcustom ivy-taskrunner-project-warning
   "The currently visited buffer must be in a project in order to select a task!
-   Please switch to a project which is recognized by projectile!"
+Please switch to a project which is recognized by projectile!"
   "Warning to indicate that a project must be visited to call ivy-taskrunner."
   :group 'ivy-taskrunner
   :type 'string)
@@ -175,36 +175,6 @@ If it is not, prompt the user to select a project"
         (projectile-switch-project))
     t))
 
-(defun ivy-taskrunner--run-ivy (TARGETS)
-  "Run an instance of ivy with TARGETS as choices.
-If targets is nil then display an error message without running Helm.
-TARGETS should be a list of the form:
-\(cache-status project-directory project-tasks)
-where cache-status indicates if the project tasks are in the cache,
-project-directory is the directory of the project and project-tasks
-are the tasks for that project."
-  (let ((cache-status (car TARGETS))
-        (proj-dir (cadr TARGETS))
-        (proj-tasks (caddr TARGETS))
-        )
-    (if (null proj-tasks)
-        (message ivy-taskrunner-no-targets-found-warning)
-      (progn
-        ;; If the tasks are not in the cache then add them
-        (when (null cache-status)
-          (taskrunner-add-to-tasks-cache proj-dir proj-tasks))
-
-        ;; Add extra actions for ivy
-        (ivy-set-actions
-         'ivy-taskrunner
-         ivy-taskrunner-actions)
-        
-        ;; Run ivy
-        (ivy-read "Task to run: "
-                  proj-tasks
-                  :require-match t
-                  :action 'ivy-taskrunner--root-task)))))
-
 ;;;###autoload
 (defun ivy-taskrunner ()
   "Launch ivy to select a task to run in the current project.
@@ -214,16 +184,20 @@ for several seconds."
   (ivy-taskrunner--check-if-in-project)
   ;; Run the ivy interface only if a user selects a project.
   (if (projectile-project-p)
-      (async-start
-       `(lambda ()
-          ;; inject the load path so we can find taskrunner
-          ,(async-inject-variables "\\`load-path\\'")
-          ,(async-inject-variables "taskrunner-.*")
-          (require 'cl)
-          (require 'taskrunner)
-          (taskrunner-get-tasks-from-cache-async)
-          )
-       'ivy-taskrunner--run-ivy)
+      (taskrunner-get-tasks-async (lambda (TARGETS)
+                                    (if (null TARGETS)
+                                        (message ivy-taskrunner-no-targets-found-warning)
+                                      (progn
+                                        ;; Add extra actions for ivy
+                                        (ivy-set-actions
+                                         'ivy-taskrunner
+                                         ivy-taskrunner-actions)
+                                        
+                                        ;; Run ivy
+                                        (ivy-read "Task to run: "
+                                                  TARGETS
+                                                  :require-match t
+                                                  :action 'ivy-taskrunner--root-task)))))
     (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
