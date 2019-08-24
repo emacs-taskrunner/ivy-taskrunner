@@ -256,7 +256,8 @@ for several seconds."
           (ivy-read "Buffer to open: "
                     taskrunner-buffers
                     :require-match t
-                    :action 'switch-to-buffer))
+                    :action 'switch-to-buffer
+                    :caller 'ivy-taskrunner-task-buffers))
       (message ivy-taskrunner-no-buffers-warning))))
 
 ;;;###autoload
