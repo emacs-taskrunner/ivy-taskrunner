@@ -192,20 +192,21 @@ If it is not, prompt the user to select a project"
     t))
 
 
+;; Add extra actions for ivy
+(ivy-set-actions
+ 'ivy-taskrunner
+ ivy-taskrunner-actions)
+
 (defun ivy-taskrunner--run-ivy-for-targets (TARGETS)
   (if (null TARGETS)
       (message ivy-taskrunner-no-targets-found-warning)
     (progn
-      ;; Add extra actions for ivy
-      (ivy-set-actions
-       'ivy-taskrunner
-       ivy-taskrunner-actions)
-      
       ;; Run ivy
       (ivy-read "Task to run: "
                 TARGETS
                 :require-match t
-                :action 'ivy-taskrunner--root-task))))
+                :action 'ivy-taskrunner--root-task
+                :caller 'ivy-taskrunner))))
 
 ;;;###autoload
 (defun ivy-taskrunner ()
