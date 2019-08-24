@@ -198,6 +198,8 @@ If it is not, prompt the user to select a project"
  ivy-taskrunner-actions)
 
 (defun ivy-taskrunner--run-ivy-for-targets (TARGETS)
+  "Run an instance of ivy with TARGETS as candidates for selection.
+If TARGETS is nil then show a warning to indicate that there are not targets."
   (if (null TARGETS)
       (message ivy-taskrunner-no-targets-found-warning)
     (progn
