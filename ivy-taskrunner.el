@@ -24,7 +24,6 @@
 
 ;; projectile
 ;; taskrunner
-;; async
 ;; ivy
 
 ;; Then put this folder in your load-path, and put this in your init:
@@ -96,13 +95,16 @@ Please switch to a project which is recognized by projectile!"
   :group 'ivy-taskrunner
   :type 'string)
 
+;; Variable aliases for customizable variables used in the backend
 (defvaralias 'ivy-taskrunner-preferred-js-package-manager 'taskrunner-preferred-js-package-manager)
 (defvaralias 'ivy-taskrunner-get-all-make-targets 'taskrunner-retrieve-all-make-targets)
-(defvaralias 'ivy-taskrunner-leiningen-buffer-name 'taskrunner-leiningen-buffer-name)
-(defvaralias 'ivy-taskrunner-leiningen-task-section-regexp 'taskrunner-leiningen-task-section-header-regexp)
-(defvaralias 'ivy-taskrunner-gradle-taskbuffer-name 'taskrunner-gradle-tasks-buffer-name)
 (defvaralias 'ivy-taskrunner-gradle-heading-regexps 'taskrunner-gradle-heading-regexps)
-(defvaralias 'ivy-taskrunner-ant-tasks-buffer-name 'taskrunner-ant-tasks-buffer-name)
+(defvaralias 'ivy-taskrunner-build-dir-list 'taskrunner-build-dir-list)
+(defvaralias 'ivy-taskrunner-source-dir-list 'taskrunner-source-dir-list)
+(defvaralias 'ivy-taskrunner-go-task-bin-path 'taskrunner-go-task-bin-path)
+(defvaralias 'ivy-taskrunner-mage-bin-path 'taskrunner-mage-bin-path)
+(defvaralias 'ivy-taskrunner-doit-bin-path 'taskrunner-doit-bin-path)
+(defvaralias 'ivy-taskrunner-no-previous-command-ran-warning 'taskrunner-no-previous-command-ran-warning)
 
 (defconst ivy-taskrunner-no-buffers-warning
   "ivy-taskrunner: No taskrunner buffers are currently opened!"
