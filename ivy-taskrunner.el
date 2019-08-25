@@ -194,7 +194,7 @@ If it is not, prompt the user to select a project"
     t))
 
 
-;; Add extra actions for ivy
+;; Add extra actions for main ivy instance
 (ivy-set-actions
  'ivy-taskrunner
  ivy-taskrunner-actions)

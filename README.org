@@ -8,6 +8,12 @@ files(makefiles) or parsing the output of the taskrunner/build systems. This can
 sometimes be a bit slow but this is made to be a (usually) one time cost. All
 tasks retrieved are saved in a cache which persists after an emacs instance is
 killed and then loaded up again when emacs/ivy-taskrunner is started.
+
+*Warning*: I have not worked with most of these build systems/taskrunners but
+ support has been provided for them. Since my knowledge is fairly elementary, I
+ might miss some subtleties. If you have any advice then please feel free to
+ open a pull request on the repository hosting the backend for this project
+ which can be found [[https://github.com/emacs-taskrunner/emacs-taskrunner][here]]. Thanks!
 * Installation
 ** MELPA
 This package will be submitted to melpa shortly.
@@ -20,6 +26,7 @@ To install this package, you will need the following:
 - [[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner]]
 - [[https://github.com/jwiegley/emacs-async][emacs-async]] 
 * Usage
+** Functions
 There are several entry points for this package:
 - ~ivy-taskrunner~: This function gathers all of the tasks from the
   taskrunners/build systems at the project root asynchronously. The tasks
@@ -69,6 +76,38 @@ There are several entry points for this package:
   over again and displayed to the user. If you have added new tasks and do not
   see them then call this function to update the cache and include them for
   selection.
+** Variables
+Some functions of interest are:
+- ~ivy-taskrunner-preferred-js-package-manager~: Choose if you prefer npm or
+  yarn. This is usually deduced automatically depending on the presence of a
+  ~package-lock.json~ file or ~yarn.lock~ file but if those are not found then this
+  variable value is used if it is not nil. If this variable is left nil(its default) then ~npm~ is
+  whenever the package manager cannot be deduced.
+- ~ivy-taskrunner-get-all-make-targets~: When this variable is not nil then all
+  make targets are retrieved including those which start with ~_~ (underscore)
+  which are usually considered to be "hidden". Its default value is t.
+- ~ivy-taskrunner-build-dir-list~: This variable holds a list of strings where
+  each of them is a possible name of the build folder used in a project. Its
+  default value contains: ~build, Build, buildDir, builddir, builds~. When
+  ivy-taskrunner is attempting to locate a ~Makefile~ for ~CMake~ or a ~build.ninja~
+  for ~meson~ then all of the directories in this list are checked one by one. The first
+  directory which contains one of these files is used as the build folder and
+  build targets are collected from there. If you use a different name for build
+  directories which you would like searched then please append the name to the
+  list assigned to this variable.
+- ~ivy-taskrunner-source-dir-list~: This variable is similar to the build-dir-list
+  one. It contains a list of strings and each one indicates a possible name for
+  the source folder of a project. Its default value is: ~src, Src, source,
+  Source~. When ivy-taskrunner is attempting to locate the ~CMakeLists.txt~ or
+  ~meson.build~ files, it checks these directories in case it is an in-source
+  build. If you use a different name for source directories then please append
+  that to the list assigned to this variable.
+- ~ivy-taskrunner-go-task-bin-path~: This variable contains the path used to
+  locate the folder containing the golang binary for the [[https://github.com/go-task/task][go-task]] taskrunner. Its default is ~~/go/bin~.
+- ~ivy-taskrunner-mage-bin-path~: This variable contains the path used to
+  locate the folder containing the golang binary for the [[https://github.com/magefile/mage][mage]] taskrunner. Its default is ~~/go/bin~.
+- ~ivy-taskrunner-doit-bin-path~: This variable contains the path used to
+  locate the folder containing the binary for the [[https://github.com/pydoit/doit][doit]] taskrunner. Its default is ~~/.local/bin~.
 * Supported build/taskrunner systems
 The following systems are currently supported:
 - [X] yarn/npm
@@ -82,6 +121,7 @@ The following systems are currently supported:
 - [X] rake
 - [X] Make
 - [X] CMake
+- [X] Meson/Ninja
 - [X] [[https://github.com/go-task/task][go-task]] 
 - [X] [[https://github.com/magefile/mage][mage]] 
 - [X] [[https://github.com/pydoit/doit][doit]] 
@@ -95,5 +135,5 @@ The following systems are currently supported:
 - [X] cabal(Limited Support)
 * Bug Reports and Echancement Requests
 If you have a bug report related to the user interface then please submit it
-here. Otherwise, all other bug reports and echancement requests should go to the
+here. Otherwise, all other bug reports and echancment requests should go to the
 [[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner repository]].
