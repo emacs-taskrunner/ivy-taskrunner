@@ -14,6 +14,8 @@ killed and then loaded up again when emacs/ivy-taskrunner is started.
  might miss some subtleties. If you have any advice then please feel free to
  open a pull request on the repository hosting the backend for this project
  which can be found [[https://github.com/emacs-taskrunner/emacs-taskrunner][here]]. Thanks!
+** ivy-taskrunner in action
+GIF's/images will be added soon! 
 * Installation
 ** MELPA
 This package will be submitted to melpa shortly.
@@ -24,7 +26,6 @@ To install this package, you will need the following:
 - [[https://github.com/abo-abo/swiper][ivy/swiper]]
 - [[https://github.com/ericdanan/counsel-projectile][(OPTIONAL) counsel-projectile]] 
 - [[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner]]
-- [[https://github.com/jwiegley/emacs-async][emacs-async]] 
 * Usage
 ** Functions
 There are several entry points for this package:

@@ -4,9 +4,9 @@
 
 ;; Author: Yavor Konstantinov <ykonstantinov1 AT gmail DOT com>
 ;; URL: https://github.com/emacs-taskrunner/ivy-taskrunner
-;; Version: 1.0
-;; Package-Requires: ((emacs "24"))
-;; Keywords: build-system taskrunner build task-runner tasks ivy
+;; Version: 0.9
+;; Package-Requires: ((emacs "25.1"))
+;; Keywords: build-system taskrunner build task-runner tasks ivy convenience
 
 ;; This file is not part of GNU Emacs.
 
@@ -25,6 +25,7 @@
 ;; projectile
 ;; taskrunner
 ;; ivy
+;; (OPTIONAL) counsel-projectile
 
 ;; Then put this folder in your load-path, and put this in your init:
 
@@ -37,8 +38,9 @@
 ;; in the project.  If you add new tasks then call `ivy-taskrunner-update-cache'
 ;; to make sure that the newly added commands will be shown.  You can use the
 ;; command `ivy-taskrunner-task-buffers' to show all buffers which were used to
-;; run a task Additionally, if you would like to rerun the last ran command, use
-;; `ivy-taskrunner-rerun-last-command'.
+;; run a task.  If you would like to kill all buffers then you can use the
+;; command `ivy-taskrunner-kill-all-buffers'.  Additionally, if you would like to
+;; rerun the last ran command, use `ivy-taskrunner-rerun-last-command'.
 
 ;;;; Credits
 
@@ -72,14 +74,14 @@
 (require 'taskrunner)
 
 (defgroup ivy-taskrunner nil
-  "Group for ivy-taskrunner."
+  "Group for `ivy-taskrunner'."
   :group 'convenience)
 
 ;;;; Variables
 (defcustom ivy-taskrunner-project-warning
   "The currently visited buffer must be in a project in order to select a task!
 Please switch to a project which is recognized by projectile!"
-  "Warning to indicate that a project must be visited to call ivy-taskrunner."
+  "Warning to indicate that a project must be visited to call `ivy-taskrunner'."
   :group 'ivy-taskrunner
   :type 'string)
 
@@ -137,7 +139,7 @@ Please switch to a project which is recognized by projectile!"
   (kill-buffer BUFFER-NAME))
 
 (defun ivy-taskrunner--kill-all-buffers ()
-  "Kill all helm-taskrunner task buffers.
+  "Kill all `ivy-taskrunner' task buffers.
 The argument TEMP is simply there since a Helm action requires a function with
 one input."
   (taskrunner-kill-compilation-buffers))
@@ -245,7 +247,7 @@ for several seconds."
 
 ;;;###autoload
 (defun ivy-taskrunner-task-buffers ()
-  "Show all ivy-taskrunner buffers."
+  "Show all `ivy-taskrunner' buffers."
   (interactive)
   (let ((taskrunner-buffers (taskrunner-get-compilation-buffers)))
 
@@ -264,7 +266,7 @@ for several seconds."
 
 ;;;###autoload
 (defun ivy-taskrunner-kill-all-buffers ()
-  "Kill all ivy-taskrunner compilation buffers."
+  "Kill all `ivy-taskrunner' compilation buffers."
   (taskrunner-kill-compilation-buffers))
 
 (defun ivy-taskrunner--open-file (FILENAME)
