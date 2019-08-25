@@ -72,6 +72,7 @@
 
 (require 'ivy)
 (require 'taskrunner)
+(require 'cl-lib)
 
 (defgroup ivy-taskrunner nil
   "Group for `ivy-taskrunner'."
@@ -188,10 +189,11 @@ If it is not, prompt the user to select a project"
   (if (not (projectile-project-p))
       ;; If counsel is intalled, use that, otherwise use the default
       ;; projectile-switch-project interface. The command returns
-      (if (package-installed-p 'counsel-projectile)
+      (if  (package-installed-p 'counsel-projectile)
           (progn
             (require 'counsel-projectile)
-            (counsel-projectile-switch-project))
+            (when (fboundp 'counsel-projectile-switch-project)
+              (counsel-projectile-switch-project)))
         (projectile-switch-project))
     t))
 
@@ -281,9 +283,9 @@ This function is meant to be used with helm only."
   (if (stringp ivy-taskrunner--project-files)
       (find-file ivy-taskrunner--project-files)
     (ivy-read "Select a file: "
-              (map 'list (lambda (elem)
-                           (car elem))
-                   ivy-taskrunner--project-files)
+              (cl-map 'list (lambda (elem)
+                              (car elem))
+                      ivy-taskrunner--project-files)
               :require-match t
               :action 'ivy-taskrunner--open-file)))
 
@@ -295,9 +297,9 @@ This function is meant to be used with helm only."
   (setq ivy-taskrunner--project-files (taskrunner-collect-taskrunner-files (projectile-project-root)))
   (if ivy-taskrunner--project-files
       (ivy-read "Select build system: "
-                (map 'list (lambda (elem)
-                             (car elem))
-                     ivy-taskrunner--project-files)
+                (cl-map 'list (lambda (elem)
+                                (car elem))
+                        ivy-taskrunner--project-files)
                 :require-match t
                 :action 'ivy-taskrunner--select-system)
     (message ivy-taskrunner-no-files-found-warning)))
