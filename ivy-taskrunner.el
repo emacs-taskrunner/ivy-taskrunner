@@ -189,9 +189,11 @@ If it is not, prompt the user to select a project"
   (if (not (projectile-project-p))
       ;; If counsel is intalled, use that, otherwise use the default
       ;; projectile-switch-project interface. The command returns
-      (if  (package-installed-p 'counsel-projectile)
+      (if (package-installed-p 'counsel-projectile)
           (progn
             (require 'counsel-projectile)
+            ;; This code will never be reached unless the package is installed
+            ;; but this is necessary to silence the bytecompilation warning
             (when (fboundp 'counsel-projectile-switch-project)
               (counsel-projectile-switch-project)))
         (projectile-switch-project))
