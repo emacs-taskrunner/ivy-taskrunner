@@ -25,7 +25,7 @@ To install this package, you will need the following:
 - [[https://github.com/bbatsov/projectile][projectile]] 
 - [[https://github.com/abo-abo/swiper][ivy/swiper]]
 - [[https://github.com/ericdanan/counsel-projectile][(OPTIONAL) counsel-projectile]] 
-- [[https://github.com/emacs-taskrunner/emacs-taskrunner][emacs-taskrunner]]
+- [[https://github.com/emacs-taskrunner/emacs-taskrunner][taskrunner]]
 * Usage
 ** Functions
 There are several entry points for this package:
@@ -77,6 +77,21 @@ There are several entry points for this package:
   over again and displayed to the user. If you have added new tasks and do not
   see them then call this function to update the cache and include them for
   selection.
+** Minor mode
+~ivy-taskrunner~ comes with its own minor mode called
+~ivy-taskrunner-minor-mode~. It is a global minor mode which attaches a function to
+the ~projectile-after-switch-project-hook~. When this minor mode is enabled, tasks
+for the currently visited project are retrieved in the background so they are
+ready whenever you need them. If you attempt to start ~ivy-taskrunner~ while the
+tasks are being gathered in the background, a warning will be shown to let you
+know that they are not available at the moment. As soon as they are gathered, a
+~ivy~ window will be shown which will let you choose from them. When this mode is
+toggled off, the function is removed from the hook.
+
+Using this minor mode is completely optional. The only benefit is that tasks are
+retrieved as soon as you switch to a project using ~projectile~.
+
+The minor mode will appear in the modeline as ~IT~.
 ** Variables
 Some functions of interest are:
 - ~ivy-taskrunner-preferred-js-package-manager~: Choose if you prefer npm or
@@ -132,10 +147,12 @@ whatever you would like.
   items in the command history for the currently visited project.
 - ~ivy-taskrunner-no-buffers-warning~: Warning used when there are not
   ~ivy-taskrunner~ compilation buffers.
+- ~ivy-taskrunner-tasks-being-retrieved-warning~: Warning used to indicate that
+  tasks are being retrieved in the background. It is only shown if the
+  ~ivy-taskrunner-minor-mode~ is toggled on.
 * Supported build/taskrunner systems
 *** Features
 - Multiple build folders
-- A global minor mode which fetches tasks whenever the user switches a project
 *** Systems
 The following systems are currently supported:
 - [X] yarn/npm
