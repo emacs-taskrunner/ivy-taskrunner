@@ -208,6 +208,9 @@ If it is not, prompt the user to select a project"
       (if (package-installed-p 'counsel-projectile)
           (progn
             (require 'counsel-projectile)
+            ;; This code will never be reached unless helm-projectile is
+            ;; installed but this is necessary in order to silence the
+            ;; bytecompiler warning
             (when (fboundp 'counsel-projectile-switch-project)
               (counsel-projectile-switch-project)))
         (projectile-switch-project))
