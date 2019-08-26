@@ -133,6 +133,10 @@ whatever you would like.
 - ~ivy-taskrunner-no-buffers-warning~: Warning used when there are not
   ~ivy-taskrunner~ compilation buffers.
 * Supported build/taskrunner systems
+*** Features
+- Multiple build folders
+- A global minor mode which fetches tasks whenever the user switches a project
+*** Systems
 The following systems are currently supported:
 - [X] yarn/npm
 - [X] Gulp
