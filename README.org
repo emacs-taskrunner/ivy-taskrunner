@@ -104,11 +104,34 @@ Some functions of interest are:
   build. If you use a different name for source directories then please append
   that to the list assigned to this variable.
 - ~ivy-taskrunner-go-task-bin-path~: This variable contains the path used to
-  locate the folder containing the golang binary for the [[https://github.com/go-task/task][go-task]] taskrunner. Its default is ~~/go/bin~.
+  locate the folder containing the golang binary for the [[https://github.com/go-task/task][go-task]] taskrunner. Its default is ~/home/USER/go/bin~.
 - ~ivy-taskrunner-mage-bin-path~: This variable contains the path used to
-  locate the folder containing the golang binary for the [[https://github.com/magefile/mage][mage]] taskrunner. Its default is ~~/go/bin~.
+  locate the folder containing the golang binary for the [[https://github.com/magefile/mage][mage]] taskrunner. Its default is ~/home/USER/go/bin~.
 - ~ivy-taskrunner-doit-bin-path~: This variable contains the path used to
-  locate the folder containing the binary for the [[https://github.com/pydoit/doit][doit]] taskrunner. Its default is ~~/.local/bin~.
+  locate the folder containing the binary for the [[https://github.com/pydoit/doit][doit]] taskrunner. Its default is ~/home/USER/.local/bin~.
+- ~ivy-taskrunner-command-history-size~: This variable controls the number of
+  saved commands in the history cache. Its default value is 10.
+- ~ivy-taskrunner-prompt-before-show~: The ~ivy-taskrunner~ tasks/targets are
+  retrieved asynchronously. While this is being done, you are free to do what
+  you please(edit text, scroll around and so on). If you would like to be
+  prompted before the ~ivy~ buffer is shown for selection(just in case you do not
+  end up typing into it) then set this to true. Its default is ~nil~.
+*** Warnings
+If English is not your preferred language then you can set these warnings to
+whatever you would like.
+- ~ivy-taskrunner-no-previous-command-ran-warning~: This variable holds a string
+  which is displayed to the user when there is no previous command which can be
+  reran in the current project. Change this if you would like to see something different.
+- ~ivy-taskrunner-project-warning~: Warning used when the currently visited
+  buffer is not in a  project recognized by ~projectile.~
+- ~ivy-taskrunner-no-targets-found-warning~: Warning used when there have been no
+  targets/tasks found in the current project.
+- ~ivy-taskrunner-no-files-found-warning~: Warning used when there have been no
+  configuration files found for the build/taskrunner system in the current project.
+- ~ivy-taskrunner-command-history-empty-warning~: Warning used when there are no
+  items in the command history for the currently visited project.
+- ~ivy-taskrunner-no-buffers-warning~: Warning used when there are not
+  ~ivy-taskrunner~ compilation buffers.
 * Supported build/taskrunner systems
 The following systems are currently supported:
 - [X] yarn/npm

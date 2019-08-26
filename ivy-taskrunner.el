@@ -76,6 +76,7 @@
 
 (defgroup ivy-taskrunner nil
   "Group for `ivy-taskrunner'."
+  :prefix "ivy-taskrunner-"
   :group 'convenience)
 
 ;;;; Variables
@@ -98,6 +99,24 @@ Please switch to a project which is recognized by projectile!"
   :group 'ivy-taskrunner
   :type 'string)
 
+(defcustom ivy-taskrunner-no-buffers-warning
+  "ivy-taskrunner: No taskrunner buffers are currently opened!"
+  "Warning used to indicate that there are not task buffers opened."
+  :group 'ivy-taskrunner
+  :type 'string)
+
+(defcustom ivy-taskrunner-command-history-empty-warning
+  "ivy-taskrunner: Command history is empty!"
+  "Warning used to indicate that the command history is empty for the project."
+  :group 'ivy-taskrunner
+  :type 'string)
+
+(defcustom ivy-taskrunner-prompt-before-show nil
+  "Whether or not to prompt the user before showing a `ivy-taskrunner' window."
+  :group 'ivy-taskrunner
+  :type 'boolean
+  :options '(t nil))
+
 ;; Variable aliases for customizable variables used in the backend
 (defvaralias 'ivy-taskrunner-preferred-js-package-manager 'taskrunner-preferred-js-package-manager)
 (defvaralias 'ivy-taskrunner-get-all-make-targets 'taskrunner-retrieve-all-make-targets)
@@ -108,10 +127,8 @@ Please switch to a project which is recognized by projectile!"
 (defvaralias 'ivy-taskrunner-mage-bin-path 'taskrunner-mage-bin-path)
 (defvaralias 'ivy-taskrunner-doit-bin-path 'taskrunner-doit-bin-path)
 (defvaralias 'ivy-taskrunner-no-previous-command-ran-warning 'taskrunner-no-previous-command-ran-warning)
+(defvaralias 'ivy-taskrunner-command-history-size 'taskrunner-command-history-size)
 
-(defconst ivy-taskrunner-no-buffers-warning
-  "ivy-taskrunner: No taskrunner buffers are currently opened!"
-  "Warning used to indicate that there are not task buffers opened.")
 
 (defvar ivy-taskrunner--project-files '()
   "Used to store the project files and their paths.")
@@ -141,7 +158,7 @@ Please switch to a project which is recognized by projectile!"
 
 (defun ivy-taskrunner--kill-all-buffers ()
   "Kill all `ivy-taskrunner' task buffers.
-The argument TEMP is simply there since a Helm action requires a function with
+The argument TEMP is simply there since a ivy action requires a function with
 one input."
   (taskrunner-kill-compilation-buffers))
 
@@ -192,8 +209,9 @@ If it is not, prompt the user to select a project"
       (if (package-installed-p 'counsel-projectile)
           (progn
             (require 'counsel-projectile)
-            ;; This code will never be reached unless the package is installed
-            ;; but this is necessary to silence the bytecompilation warning
+            ;; This code will never be reached unless helm-projectile is
+            ;; installed but this is necessary in order to silence the
+            ;; bytecompiler warning
             (when (fboundp 'counsel-projectile-switch-project)
               (counsel-projectile-switch-project)))
         (projectile-switch-project))
@@ -210,8 +228,13 @@ If it is not, prompt the user to select a project"
 If TARGETS is nil then show a warning to indicate that there are not targets."
   (if (null TARGETS)
       (message ivy-taskrunner-no-targets-found-warning)
-    (progn
-      ;; Run ivy
+    (if ivy-taskrunner-prompt-before-show
+        (when (y-or-n-p "Show ivy-taskrunner? ")
+          (ivy-read "Task to run: "
+                    TARGETS
+                    :require-match t
+                    :action 'ivy-taskrunner--root-task
+                    :caller 'ivy-taskrunner))
       (ivy-read "Task to run: "
                 TARGETS
                 :require-match t
@@ -275,7 +298,7 @@ for several seconds."
 
 (defun ivy-taskrunner--open-file (FILENAME)
   "Open the file FILENAME.
-This function is meant to be used with helm only."
+This function is meant to be used with `ivy' only."
   (setq ivy-taskrunner--project-files  (car (alist-get (intern FILENAME) ivy-taskrunner--project-files)))
   (find-file ivy-taskrunner--project-files))
 
@@ -305,6 +328,27 @@ This function is meant to be used with helm only."
                 :require-match t
                 :action 'ivy-taskrunner--select-system)
     (message ivy-taskrunner-no-files-found-warning)))
+
+;; Add extra actions for main ivy instance
+(ivy-set-actions
+ 'ivy-taskrunner-history
+ ivy-taskrunner-actions)
+
+;;;###autoload
+(defun ivy-taskrunner-command-history ()
+  "Show the command history for the currently visited project."
+  (interactive)
+  (ivy-taskrunner--check-if-in-project)
+  (if (projectile-project-p)
+      (let ((commands-ran (taskrunner-get-commands-from-history (projectile-project-root))))
+        (if commands-ran
+            (ivy-read "Command to run: "
+                      commands-ran
+                      :require-match t
+                      :action 'ivy-taskrunner--root-task
+                      :caller 'ivy-taskrunner-history)
+          (message ivy-taskrunner-command-history-empty-warning)))
+    (message ivy-taskrunner-project-warning)))
 
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
