@@ -126,6 +126,7 @@ Please switch to a project which is recognized by projectile!"
 (defvaralias 'ivy-taskrunner-mage-bin-path 'taskrunner-mage-bin-path)
 (defvaralias 'ivy-taskrunner-doit-bin-path 'taskrunner-doit-bin-path)
 (defvaralias 'ivy-taskrunner-no-previous-command-ran-warning 'taskrunner-no-previous-command-ran-warning)
+(defvaralias 'ivy-taskrunner-command-history-size 'taskrunner-command-history-size)
 
 
 (defvar ivy-taskrunner--project-files '()
@@ -223,8 +224,13 @@ If it is not, prompt the user to select a project"
 If TARGETS is nil then show a warning to indicate that there are not targets."
   (if (null TARGETS)
       (message ivy-taskrunner-no-targets-found-warning)
-    (progn
-      ;; Run ivy
+    (if ivy-taskrunner-prompt-before-show
+        (when (y-or-n-p "Show ivy-taskrunner? ")
+          (ivy-read "Task to run: "
+                    TARGETS
+                    :require-match t
+                    :action 'ivy-taskrunner--root-task
+                    :caller 'ivy-taskrunner))
       (ivy-read "Task to run: "
                 TARGETS
                 :require-match t
