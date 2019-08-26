@@ -117,6 +117,19 @@ Please switch to a project which is recognized by projectile!"
   :type 'boolean
   :options '(t nil))
 
+(defcustom ivy-taskrunner-tasks-being-retrieved-warning
+  "ivy-taskrunner: The tasks are currently being retrieved. They will be displayed when ready."
+  "Warning used to indicate that the tasks are being retrieved.
+This is only used when the minor mode is on."
+  :group 'ivy-taskrunner
+  :type 'string)
+
+(defvar ivy-taskrunner--retrieving-tasks-p nil
+  "Variable used to indicate if tasks are being retrieved in the background.")
+
+(defvar ivy-taskrunner--tasks-queried-p nil
+  "Variable used to indicate if the user queried for tasks before they were ready.")
+
 ;; Variable aliases for customizable variables used in the backend
 (defvaralias 'ivy-taskrunner-preferred-js-package-manager 'taskrunner-preferred-js-package-manager)
 (defvaralias 'ivy-taskrunner-get-all-make-targets 'taskrunner-retrieve-all-make-targets)
@@ -209,7 +222,7 @@ If it is not, prompt the user to select a project"
       (if (package-installed-p 'counsel-projectile)
           (progn
             (require 'counsel-projectile)
-            ;; This code will never be reached unless helm-projectile is
+            ;; This code will never be reached unless ivy-projectile is
             ;; installed but this is necessary in order to silence the
             ;; bytecompiler warning
             (when (fboundp 'counsel-projectile-switch-project)
@@ -250,7 +263,12 @@ for several seconds."
   (ivy-taskrunner--check-if-in-project)
   ;; Run the ivy interface only if a user selects a project.
   (if (projectile-project-p)
-      (taskrunner-get-tasks-async 'ivy-taskrunner--run-ivy-for-targets)
+      (if (and ivy-taskrunner-minor-mode
+               ivy-taskrunner--retrieving-tasks-p)
+          (progn
+            (setq ivy-taskrunner--tasks-queried-p t)
+            (message ivy-taskrunner-tasks-being-retrieved-warning))
+        (taskrunner-get-tasks-async 'ivy-taskrunner--run-ivy-for-targets))
     (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
@@ -349,6 +367,36 @@ This function is meant to be used with `ivy' only."
                       :caller 'ivy-taskrunner-history)
           (message ivy-taskrunner-command-history-empty-warning)))
     (message ivy-taskrunner-project-warning)))
+
+;; Minor mode related
+
+;; TODO: There might be an issue if the user switches projects too quickly(as in
+;; open one project and then directly open another). This might lead to the
+;; caches being corrupted.
+
+(defun ivy-taskrunner--projectile-hook-function ()
+  "Collect tasks in the background when `projectile-switch-project' is called."
+  (setq ivy-taskrunner--retrieving-tasks-p t)
+  (taskrunner-get-tasks-async (lambda (TARGETS)
+                                (setq ivy-taskrunner--retrieving-tasks-p nil)
+                                ;; If the tasks were queried, show them to the user
+                                (when ivy-taskrunner--tasks-queried-p
+                                  (setq ivy-taskrunner--tasks-queried-p nil)
+                                  (ivy-taskrunner--run-ivy-for-targets TARGETS)))
+                              (projectile-project-root)))
+
+;; Thanks to Marcin Borkowski for the `:init-value' tip
+;; http://mbork.pl/2018-11-03_A_few_remarks_about_defining_minor_modes
+;;;###autoload
+(define-minor-mode ivy-taskrunner-minor-mode
+  "Minor mode for asynchronously collecting project tasks when a project is switched to."
+  :init-value nil
+  :lighter " IT"
+  :global t
+  ;; Add/remove the hooks when minor mode is toggled on or off
+  (if ivy-taskrunner-minor-mode
+      (add-hook 'projectile-after-switch-project-hook #'ivy-taskrunner--projectile-hook-function)
+    (remove-hook 'projectile-after-switch-project-hook #'ivy-taskrunner--projectile-hook-function)))
 
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
