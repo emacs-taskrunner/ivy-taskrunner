@@ -36,6 +36,9 @@ If the tasks have been previously cached(as in, you have called ~ivy-taskrunner~
 atleast once in the repository) then they will appear instantly and no prompt
 will be displayed. This means that enabling this option will not get in the way
 of operation for the majority of times.
+** Obligatory "What window manager/color theme are you using?"
+I am using ~i3wm~ with ~polybar~ for window manager/status bar combo.
+The theme used is ~gruvbox-theme~ and I am running the ~gruvbox-dark-soft~ version.
 * Installation
 ** MELPA
 This package will be submitted to melpa shortly.
