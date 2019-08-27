@@ -15,7 +15,27 @@ killed and then loaded up again when emacs/ivy-taskrunner is started.
  open a pull request on the repository hosting the backend for this project
  which can be found [[https://github.com/emacs-taskrunner/emacs-taskrunner][here]]. Thanks!
 ** ivy-taskrunner in action
-GIF's/images will be added soon! 
+*Disclaimer*: Collecting tasks and displaying them does not normally take as long
+as it does in these gif's below. This example was ran on the [[https://github.com/spring-projects/spring-framework][spring-framework]]
+and the ~gradle~ daemon takes a bit of time to initialize.
+
+[[file:docs/ivy-taskrunner-no-prompt.gif]]
+
+You may have noticed that there is a slight problem. Tasks are ran in the
+background which leaves the user to edit/run commands as they wish. A problem
+might occur if you are typing and all the tasks/targets for the project have
+been gathered. This means that the menu will be displayed right away and you
+might type text into it which you did not mean to. If you would like to, you can
+set the variable ~ivy-taskrunner-prompt-before-show~ to ~t~. Doing this will
+prompt you before showing tasks which have just been gathered. An example can be
+found below:
+
+[[file:docs/ivy-taskrunner-prompt.gif]]
+
+If the tasks have been previously cached(as in, you have called ~ivy-taskrunner~
+atleast once in the repository) then they will appear instantly and no prompt
+will be displayed. This means that enabling this option will not get in the way
+of operation for the majority of times.
 * Installation
 ** MELPA
 This package will be submitted to melpa shortly.
