@@ -175,9 +175,7 @@ whatever you would like.
   tasks are being retrieved in the background. It is only shown if the
   ~ivy-taskrunner-minor-mode~ is toggled on.
 * Supported build/taskrunner systems
-*** Features
-- Multiple build folders
-*** Systems
+** Systems
 The following systems are currently supported:
 - [X] yarn/npm
 - [X] Gulp
@@ -202,6 +200,19 @@ The following systems are currently supported:
 - [X] Cask(Limited Support)
 - [X] stack(Limited Support)
 - [X] cabal(Limited Support)
+** Planning to support
+*** Features
+- Multiple build folders
+*** Systems
+- [ ] Apache maven
+- [ ] [[https://waf.io/][waf]] 
+- [ ] [[https://github.com/pantsbuild/pants][pants]] 
+- [ ] tasks.json(VSCode)
+- [ ] Ninja
+- [ ] sbt
+- [ ] Buck
+- [ ] Bazel
+- [ ] msbuild(Maybe)
 * Bug Reports and Echancement Requests
 If you have a bug report related to the user interface then please submit it
 here. Otherwise, all other bug reports and echancment requests should go to the
