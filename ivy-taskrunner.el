@@ -242,6 +242,14 @@ If it is not, prompt the user to select a project"
  'ivy-taskrunner
  ivy-taskrunner-actions)
 
+(defmacro ivy-taskrunner--show-ivy-task-instance (TARGET-LIST)
+  "Show an instance of `ivy' for TARGET-LIST."
+  `(ivy-read "Task to run: "
+             ,TARGET-LIST
+             :require-match t
+             :action 'ivy-taskrunner--root-task
+             :caller 'ivy-taskrunner))
+
 (defun ivy-taskrunner--run-ivy-for-targets (TARGETS)
   "Run an instance of `ivy' with TARGETS as candidates for selection.
 If TARGETS is nil then show a warning to indicate that there are not targets."
@@ -250,16 +258,8 @@ If TARGETS is nil then show a warning to indicate that there are not targets."
     (if (and ivy-taskrunner-prompt-before-show
              ivy-taskrunner--project-cached-p)
         (when (y-or-n-p "Show ivy-taskrunner? ")
-          (ivy-read "Task to run: "
-                    TARGETS
-                    :require-match t
-                    :action 'ivy-taskrunner--root-task
-                    :caller 'ivy-taskrunner))
-      (ivy-read "Task to run: "
-                TARGETS
-                :require-match t
-                :action 'ivy-taskrunner--root-task
-                :caller 'ivy-taskrunner))))
+          (ivy-taskrunner--show-ivy-task-instance TARGETS))
+      (ivy-taskrunner--show-ivy-task-instance TARGETS))))
 
 ;;;###autoload
 (defun ivy-taskrunner ()
