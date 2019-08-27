@@ -80,6 +80,8 @@
   :group 'convenience)
 
 ;;;; Variables
+
+;; Customizable Variables
 (defcustom ivy-taskrunner-project-warning
   "The currently visited buffer must be in a project in order to select a task!
 Please switch to a project which is recognized by projectile!"
@@ -124,12 +126,6 @@ This is only used when the minor mode is on."
   :group 'ivy-taskrunner
   :type 'string)
 
-(defvar ivy-taskrunner--retrieving-tasks-p nil
-  "Variable used to indicate if tasks are being retrieved in the background.")
-
-(defvar ivy-taskrunner--tasks-queried-p nil
-  "Variable used to indicate if the user queried for tasks before they were ready.")
-
 ;; Variable aliases for customizable variables used in the backend
 (defvaralias 'ivy-taskrunner-preferred-js-package-manager 'taskrunner-preferred-js-package-manager)
 (defvaralias 'ivy-taskrunner-get-all-make-targets 'taskrunner-retrieve-all-make-targets)
@@ -142,6 +138,12 @@ This is only used when the minor mode is on."
 (defvaralias 'ivy-taskrunner-no-previous-command-ran-warning 'taskrunner-no-previous-command-ran-warning)
 (defvaralias 'ivy-taskrunner-command-history-size 'taskrunner-command-history-size)
 
+;; Private variables
+(defvar ivy-taskrunner--retrieving-tasks-p nil
+  "Variable used to indicate if tasks are being retrieved in the background.")
+
+(defvar ivy-taskrunner--tasks-queried-p nil
+  "Variable used to indicate if the user queried for tasks before they were ready.")
 
 (defvar ivy-taskrunner--project-files '()
   "Used to store the project files and their paths.")
@@ -237,7 +239,7 @@ If it is not, prompt the user to select a project"
  ivy-taskrunner-actions)
 
 (defun ivy-taskrunner--run-ivy-for-targets (TARGETS)
-  "Run an instance of ivy with TARGETS as candidates for selection.
+  "Run an instance of `ivy' with TARGETS as candidates for selection.
 If TARGETS is nil then show a warning to indicate that there are not targets."
   (if (null TARGETS)
       (message ivy-taskrunner-no-targets-found-warning)
@@ -256,7 +258,7 @@ If TARGETS is nil then show a warning to indicate that there are not targets."
 
 ;;;###autoload
 (defun ivy-taskrunner ()
-  "Launch ivy to select a task to run in the current project.
+  "Launch `ivy' to select a task to run in the current project.
 This command runs asynchronously so the ivy prompt might not show
 for several seconds."
   (interactive)
@@ -391,7 +393,7 @@ This function is meant to be used with `ivy' only."
 (define-minor-mode ivy-taskrunner-minor-mode
   "Minor mode for asynchronously collecting project tasks when a project is switched to."
   :init-value nil
-  :lighter " IT"
+  :lighter " IvT"
   :global t
   ;; Add/remove the hooks when minor mode is toggled on or off
   (if ivy-taskrunner-minor-mode

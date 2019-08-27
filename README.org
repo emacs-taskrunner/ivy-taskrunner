@@ -127,10 +127,11 @@ Some functions of interest are:
 - ~ivy-taskrunner-command-history-size~: This variable controls the number of
   saved commands in the history cache. Its default value is 10.
 - ~ivy-taskrunner-prompt-before-show~: The ~ivy-taskrunner~ tasks/targets are
-  retrieved asynchronously. While this is being done, you are free to do what
-  you please(edit text, scroll around and so on). If you would like to be
-  prompted before the ~ivy~ buffer is shown for selection(just in case you do not
-  end up typing into it) then set this to true. Its default is ~nil~.
+  retrieved asynchronously and this can sometimes take a while. While this is
+  being done, you are free to do what you please(edit text, scroll around and so
+  on). If you would like to be prompted before the ~ivy~ buffer is shown for
+  selection(just in case you do not end up typing into it) then set this to
+  ~t~. Its default is ~nil~.
 *** Warnings
 If English is not your preferred language then you can set these warnings to
 whatever you would like.
@@ -145,7 +146,7 @@ whatever you would like.
   configuration files found for the build/taskrunner system in the current project.
 - ~ivy-taskrunner-command-history-empty-warning~: Warning used when there are no
   items in the command history for the currently visited project.
-- ~ivy-taskrunner-no-buffers-warning~: Warning used when there are not
+- ~ivy-taskrunner-no-buffers-warning~: Warning used when there are no 
   ~ivy-taskrunner~ compilation buffers.
 - ~ivy-taskrunner-tasks-being-retrieved-warning~: Warning used to indicate that
   tasks are being retrieved in the background. It is only shown if the
