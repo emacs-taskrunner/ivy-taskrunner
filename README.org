@@ -21,7 +21,7 @@ and the ~gradle~ daemon takes a bit of time to initialize.
 
 [[file:docs/ivy-taskrunner-no-prompt.gif]]
 
-You may have noticed that there is a slight problem. Tasks are ran in the
+You may have noticed that there is a slight problem. Tasks are collected in the
 background which leaves the user to edit/run commands as they wish. A problem
 might occur if you are typing and all the tasks/targets for the project have
 been gathered. This means that the menu will be displayed right away and you
