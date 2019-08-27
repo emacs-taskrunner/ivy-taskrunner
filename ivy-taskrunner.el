@@ -148,6 +148,10 @@ This is only used when the minor mode is on."
 (defvar ivy-taskrunner--project-files '()
   "Used to store the project files and their paths.")
 
+(defvar ivy-taskrunner--project-cached-p nil
+  "Stores the status of the project in the cache.
+Used to enable prompts before displaying `ivy-taskrunner'.")
+
 ;; Users can add additional actions by appending to this variable
 (defconst ivy-taskrunner-actions
   '(("r" ivy-taskrunner--root-task "Run task in root without extra args")
@@ -243,7 +247,8 @@ If it is not, prompt the user to select a project"
 If TARGETS is nil then show a warning to indicate that there are not targets."
   (if (null TARGETS)
       (message ivy-taskrunner-no-targets-found-warning)
-    (if ivy-taskrunner-prompt-before-show
+    (if (and ivy-taskrunner-prompt-before-show
+             ivy-taskrunner--project-cached-p)
         (when (y-or-n-p "Show ivy-taskrunner? ")
           (ivy-read "Task to run: "
                     TARGETS
@@ -265,12 +270,14 @@ for several seconds."
   (ivy-taskrunner--check-if-in-project)
   ;; Run the ivy interface only if a user selects a project.
   (if (projectile-project-p)
-      (if (and ivy-taskrunner-minor-mode
-               ivy-taskrunner--retrieving-tasks-p)
-          (progn
-            (setq ivy-taskrunner--tasks-queried-p t)
-            (message ivy-taskrunner-tasks-being-retrieved-warning))
-        (taskrunner-get-tasks-async 'ivy-taskrunner--run-ivy-for-targets))
+      (progn
+        (setq ivy-taskrunner--project-cached-p (not (taskrunner-project-cached-p (projectile-project-root))))
+        (if (and ivy-taskrunner-minor-mode
+                 ivy-taskrunner--retrieving-tasks-p)
+            (progn
+              (setq ivy-taskrunner--tasks-queried-p t)
+              (message ivy-taskrunner-tasks-being-retrieved-warning))
+          (taskrunner-get-tasks-async 'ivy-taskrunner--run-ivy-for-targets)))
     (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
