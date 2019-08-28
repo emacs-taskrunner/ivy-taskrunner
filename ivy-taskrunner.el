@@ -171,6 +171,37 @@ Used to enable prompts before displaying `ivy-taskrunner'.")
 
 ;;;; Functions
 
+;; Minor mode related
+
+;; TODO: There might be an issue if the user switches projects too quickly(as in
+;; open one project and then directly open another). This might lead to the
+;; caches being corrupted.
+
+(defun ivy-taskrunner--projectile-hook-function ()
+  "Collect tasks in the background when `projectile-switch-project' is called."
+  (setq ivy-taskrunner--retrieving-tasks-p t)
+  (taskrunner-get-tasks-async (lambda (TARGETS)
+                                (setq ivy-taskrunner--retrieving-tasks-p nil)
+                                ;; If the tasks were queried, show them to the user
+                                (when ivy-taskrunner--tasks-queried-p
+                                  (setq ivy-taskrunner--tasks-queried-p nil)
+                                  (ivy-taskrunner--run-ivy-for-targets TARGETS)))
+                              (projectile-project-root)))
+
+;; Thanks to Marcin Borkowski for the `:init-value' tip
+;; http://mbork.pl/2018-11-03_A_few_remarks_about_defining_minor_modes
+;;;###autoload
+(define-minor-mode ivy-taskrunner-minor-mode
+  "Minor mode for asynchronously collecting project tasks when a project is switched to."
+  :init-value nil
+  :lighter " IvT"
+  :global t
+  ;; Add/remove the hooks when minor mode is toggled on or off
+  (if ivy-taskrunner-minor-mode
+      (add-hook 'projectile-after-switch-project-hook #'ivy-taskrunner--projectile-hook-function)
+    (remove-hook 'projectile-after-switch-project-hook #'ivy-taskrunner--projectile-hook-function)))
+
+;; Functions related to buffers
 (defun ivy-taskrunner--kill-buffer (BUFFER-NAME)
   "Kill the buffer name BUFFER-NAME."
   (kill-buffer BUFFER-NAME))
@@ -180,6 +211,8 @@ Used to enable prompts before displaying `ivy-taskrunner'.")
 The argument TEMP is simply there since a ivy action requires a function with
 one input."
   (taskrunner-kill-compilation-buffers))
+
+;; Functions related to running tasks in a directory
 
 (defun ivy-taskrunner--root-task (TASK)
   "Run the task TASK in the project root without asking for extra args.
@@ -376,36 +409,6 @@ This function is meant to be used with `ivy' only."
                       :caller 'ivy-taskrunner-history)
           (message ivy-taskrunner-command-history-empty-warning)))
     (message ivy-taskrunner-project-warning)))
-
-;; Minor mode related
-
-;; TODO: There might be an issue if the user switches projects too quickly(as in
-;; open one project and then directly open another). This might lead to the
-;; caches being corrupted.
-
-(defun ivy-taskrunner--projectile-hook-function ()
-  "Collect tasks in the background when `projectile-switch-project' is called."
-  (setq ivy-taskrunner--retrieving-tasks-p t)
-  (taskrunner-get-tasks-async (lambda (TARGETS)
-                                (setq ivy-taskrunner--retrieving-tasks-p nil)
-                                ;; If the tasks were queried, show them to the user
-                                (when ivy-taskrunner--tasks-queried-p
-                                  (setq ivy-taskrunner--tasks-queried-p nil)
-                                  (ivy-taskrunner--run-ivy-for-targets TARGETS)))
-                              (projectile-project-root)))
-
-;; Thanks to Marcin Borkowski for the `:init-value' tip
-;; http://mbork.pl/2018-11-03_A_few_remarks_about_defining_minor_modes
-;;;###autoload
-(define-minor-mode ivy-taskrunner-minor-mode
-  "Minor mode for asynchronously collecting project tasks when a project is switched to."
-  :init-value nil
-  :lighter " IvT"
-  :global t
-  ;; Add/remove the hooks when minor mode is toggled on or off
-  (if ivy-taskrunner-minor-mode
-      (add-hook 'projectile-after-switch-project-hook #'ivy-taskrunner--projectile-hook-function)
-    (remove-hook 'projectile-after-switch-project-hook #'ivy-taskrunner--projectile-hook-function)))
 
 ;; Notifications
 
