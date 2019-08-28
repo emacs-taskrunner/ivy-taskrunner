@@ -113,6 +113,12 @@ Please switch to a project which is recognized by projectile!"
   :group 'ivy-taskrunner
   :type 'string)
 
+(defcustom ivy-taskrunner-no-custom-commands-warning
+  "ivy-taskrunner: There are no custom commands for this project!"
+  "Warning used to indicate that there are no custom commands for the project.."
+  :group 'ivy-taskrunner
+  :type 'string)
+
 (defcustom ivy-taskrunner-prompt-before-show nil
   "Whether or not to prompt the user before showing a `ivy-taskrunner' window."
   :group 'ivy-taskrunner
@@ -160,7 +166,8 @@ Used to enable prompts before displaying `ivy-taskrunner'.")
     ("C" ivy-taskrunner--current-dir-prompt "Run task in current folder with args")
     ("s" ivy-taskrunner--select-dir "Run task in another directory")
     ("S" ivy-taskrunner--select-dir-prompt "Run task in another directory with args")
-    )
+    ("a" ivy-taskrunner--customize-command "Customize command")
+    ("D" ivy-taskrunner-delete-all-custom-commands "Delete all custom commands"))
   "A list of extra actions which can be used when running a task selected through ivy.")
 
 (defconst ivy-taskrunner-buffer-actions
@@ -178,7 +185,7 @@ Used to enable prompts before displaying `ivy-taskrunner'.")
 ;; caches being corrupted.
 
 (defun ivy-taskrunner--projectile-hook-function ()
-  "Collect tasks in the background when `projectile-switch-project' is called."
+  "Collect tasks in the background when the `projectile-switch-project' is used."
   (setq ivy-taskrunner--retrieving-tasks-p t)
   (taskrunner-get-tasks-async (lambda (TARGETS)
                                 (setq ivy-taskrunner--retrieving-tasks-p nil)
@@ -251,21 +258,28 @@ Prompt the user to supply extra arguments."
     (when command-directory
       (taskrunner-run-task TASK command-directory t))))
 
+;; https://github.com/emacs-taskrunner/ivy-taskrunner/issues/1
+;; This is used to silence the bytecompiler if a user installs the package
+;; without using package.el
+;; Thanks for the suggestion
+(declare-function counsel-projectile-switch-project "ext:counsel-projectile")
+
+;; Thanks to:
+;; https://stackoverflow.com/questions/7790382/how-to-determine-whether-a-package-is-installed-in-elisp
+;; for the tip about 'noerror in require
 (defun ivy-taskrunner--check-if-in-project ()
   "Check if the currently visited buffer is in a project.
 If it is not, prompt the user to select a project"
   ;; If we are not in a project, ask the user to switch to one
   (if (not (projectile-project-p))
       ;; If counsel is intalled, use that, otherwise use the default
-      ;; projectile-switch-project interface. The command returns
-      (if (package-installed-p 'counsel-projectile)
-          (progn
-            (require 'counsel-projectile)
-            ;; This code will never be reached unless ivy-projectile is
-            ;; installed but this is necessary in order to silence the
-            ;; bytecompiler warning
-            (when (fboundp 'counsel-projectile-switch-project)
-              (counsel-projectile-switch-project)))
+      ;; projectile-switch-project interface.
+      (if (require 'counsel-projectile nil 'noerror)
+          ;; This code will never be reached unless ivy-projectile is
+          ;; installed but this is necessary in order to silence the
+          ;; bytecompiler warning
+          (when (fboundp 'counsel-projectile-switch-project)
+            (counsel-projectile-switch-project))
         (projectile-switch-project))
     t))
 
@@ -311,6 +325,50 @@ for several seconds."
               (setq ivy-taskrunner--tasks-queried-p t)
               (message ivy-taskrunner-tasks-being-retrieved-warning))
           (taskrunner-get-tasks-async 'ivy-taskrunner--run-ivy-for-targets)))
+    (message ivy-taskrunner-project-warning)))
+
+;; Customizing Commands
+
+(defun ivy-taskrunner--customize-command (COMMAND)
+  "Customize the command COMMAND and add it to cache."
+  (let* ((taskrunner-program (car (split-string COMMAND " ")))
+         ;; Concat the arguments since we might be rerunning a command with arguments from history
+         (task-name (mapconcat 'identity
+                               (cdr (split-string COMMAND " ")) " "))
+         (new-task-name (read-string "Arguments to add to command: " task-name)))
+    (when new-task-name
+      (taskrunner-add-custom-command (projectile-project-root) (concat taskrunner-program " " new-task-name))
+      (when (y-or-n-p "Run new command? ")
+        (taskrunner-run-task (concat taskrunner-program " " new-task-name) (projectile-project-root) nil t)))))
+
+(defun ivy-taskrunner--delete-selected-command (COMMAND)
+  "Remove the command COMMAND from the custom command cache."
+  (when COMMAND
+    (taskrunner-delete-custom-command (projectile-project-root) COMMAND)))
+
+;;;###autoload
+(defun ivy-taskrunner-delete-custom-command ()
+  "Delete a custom command and remove it from the tasks output."
+  (interactive)
+  (ivy-taskrunner--check-if-in-project)
+  (if (projectile-project-p)
+      (let ((custom-tasks (taskrunner-get-custom-commands (projectile-project-root))))
+        (if custom-tasks
+            (ivy-read
+             "Command to remove: "
+             custom-tasks
+             :require-match t
+             :action 'ivy-taskrunner--delete-selected-command)
+          (message ivy-taskrunner-no-custom-commands-warning)))
+    (message ivy-taskrunner-project-warning)))
+
+;;;###autoload
+(defun ivy-taskrunner-delete-all-custom-commands (&optional _)
+  "Delete all custom commands for the currently visited project."
+  (interactive)
+  (ivy-taskrunner--check-if-in-project)
+  (if (projectile-project-p)
+      (taskrunner-delete-all-custom-commands (projectile-project-root))
     (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
