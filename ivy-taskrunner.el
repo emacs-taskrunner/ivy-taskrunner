@@ -356,7 +356,7 @@ for several seconds."
     (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
-(defun ivy-taskrunner-delete-all-custom-commands ()
+(defun ivy-taskrunner-delete-all-custom-commands (&optional _)
   "Delete all custom commands for the currently visited project."
   (interactive)
   (ivy-taskrunner--check-if-in-project)
