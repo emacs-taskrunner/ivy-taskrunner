@@ -160,7 +160,8 @@ Used to enable prompts before displaying `ivy-taskrunner'.")
     ("C" ivy-taskrunner--current-dir-prompt "Run task in current folder with args")
     ("s" ivy-taskrunner--select-dir "Run task in another directory")
     ("S" ivy-taskrunner--select-dir-prompt "Run task in another directory with args")
-    )
+    ("a" ivy-taskrunner--customize-command "Customize command")
+    ("D" ivy-taskrunner-delete-all-custom-commands "Delete all custom commands"))
   "A list of extra actions which can be used when running a task selected through ivy.")
 
 (defconst ivy-taskrunner-buffer-actions
@@ -311,6 +312,50 @@ for several seconds."
               (setq ivy-taskrunner--tasks-queried-p t)
               (message ivy-taskrunner-tasks-being-retrieved-warning))
           (taskrunner-get-tasks-async 'ivy-taskrunner--run-ivy-for-targets)))
+    (message ivy-taskrunner-project-warning)))
+
+;; Customizing Commands
+
+(defun ivy-taskrunner--customize-command (COMMAND)
+  "Customize the command COMMAND and add it to cache."
+  (let* ((taskrunner-program (car (split-string COMMAND " ")))
+         ;; Concat the arguments since we might be rerunning a command with arguments from history
+         (task-name (mapconcat 'identity
+                               (cdr (split-string COMMAND " ")) " "))
+         (new-task-name (read-string "Arguments to add to command: " task-name)))
+    (when new-task-name
+      (taskrunner-add-custom-command (projectile-project-root) (concat taskrunner-program " " new-task-name))
+      (when (y-or-n-p "Run new command? ")
+        (taskrunner-run-task (concat taskrunner-program " " new-task-name) (projectile-project-root) nil t)))))
+
+(defun ivy-taskrunner--delete-selected-command (COMMAND)
+  "Remove the command COMMAND from the custom command cache."
+  (when COMMAND
+    (taskrunner-delete-custom-command (projectile-project-root) COMMAND)))
+
+;;;###autoload
+(defun ivy-taskrunner-delete-custom-command ()
+  "Delete a custom command and remove it from the tasks output."
+  (interactive)
+  (ivy-taskrunner--check-if-in-project)
+  (if (projectile-project-p)
+      (let ((custom-tasks (taskrunner-get-custom-commands (projectile-project-root))))
+        (if custom-tasks
+            (ivy-read
+             "Command to remove: "
+             custom-tasks
+             :require-match t
+             :action 'ivy-taskrunner--delete-selected-command)
+          (message "No custom tasks for this project!")))
+    (message ivy-taskrunner-project-warning)))
+
+;;;###autoload
+(defun ivy-taskrunner-delete-all-custom-commands ()
+  "Delete all custom commands for the currently visited project."
+  (interactive)
+  (ivy-taskrunner--check-if-in-project)
+  (if (projectile-project-p)
+      (taskrunner-delete-all-custom-commands (projectile-project-root))
     (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
