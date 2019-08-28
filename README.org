@@ -100,6 +100,9 @@ There are several entry points for this package:
   over again and displayed to the user. If you have added new tasks and do not
   see them then call this function to update the cache and include them for
   selection.
+- ~ivy-taskrunner-command-history~: Show a ivy instance filled with the latest
+  commands ran in the current project. From this point, you can select a command
+  and re-run it wherever you would like.
 
 
 *Warning*: The functions below are only available if you are running an Emacs
@@ -107,9 +110,9 @@ There are several entry points for this package:
  then use the file with an emacs which is not configured for this then calling
  these will throw an error since the functions below will not be available in
  the namespace.
-- ~helm-taskrunner-notifications-on~: Turn on notifications which are shown when a
+- ~ivy-taskrunner-notifications-on~: Turn on notifications which are shown when a
   task is finished running.
-- ~helm-taskrunner-notifications-off~: Turn off notifications.
+- ~ivy-taskrunner-notifications-off~: Turn off notifications.
 ** Minor mode
 ~ivy-taskrunner~ comes with its own minor mode called
 ~ivy-taskrunner-minor-mode~. It is a global minor mode which attaches a function to
