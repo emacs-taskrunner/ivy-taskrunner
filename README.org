@@ -55,7 +55,7 @@ There are several entry points for this package:
 - ~ivy-taskrunner~: This function gathers all of the tasks from the
   taskrunners/build systems at the project root asynchronously. The tasks
   gathered are then presented in a ivy buffer where the user can select one of
-  them to run. The tasks can be ran in 6 different places:
+  them to run or customize. The tasks can be ran in 6 different places:
   - at project root
   - at project root with extra arguments supplied by the user
   - at directory visited by the current buffer
@@ -64,8 +64,12 @@ There are several entry points for this package:
   - at a custom directory selected by the user
   - at a custom directory selected by the user with extra arguments supplied by
     the user
+
+Additionally, you can select a task and customize it(i.e. Add arguments to
+it). When a task is customized, it is saved and will persist across sessions
+until it is deleted.
     
-    *Warning*: This function is asynchronous so the tasks might now appear for a
+    *Warning*: This function is asynchronous so the tasks might not appear for a
     few seconds. You are free to continue working until they do. If for some
     reason no tasks can be located, an error message will be displayed in the
     echo buffer.
@@ -77,6 +81,11 @@ There are several entry points for this package:
   - Kill buffer
   - Kill all command buffers
 - ~ivy-taskrunner-kill-all-buffers~: Kill all command buffers.
+- ~ivy-taskrunner-delete-custom-command~: This command will display an ~ivy~
+  interface containing all of the custom commands for the project. You can then
+  select one and delete it.
+- ~ivy-taskrunner-delete-all-custom-command~: This command will delete *all* custom
+  commands for the project if any exist.
 - ~ivy-taskrunner-config-files~: The majority of taskrunner/build systems have
   some type of a configuration file associate with them(Make -> Makefile, Grunt
   -> gruntfile and so on...). When this function is invoked, a ivy buffer will
@@ -129,7 +138,7 @@ retrieved as soon as you switch to a project using ~projectile~.
 
 The minor mode will appear in the modeline as ~IT~.
 ** Variables
-Some functions of interest are:
+Some variables of interest are:
 - ~ivy-taskrunner-preferred-js-package-manager~: Choose if you prefer npm or
   yarn. This is usually deduced automatically depending on the presence of a
   ~package-lock.json~ file or ~yarn.lock~ file but if those are not found then this
@@ -187,6 +196,8 @@ whatever you would like.
 - ~ivy-taskrunner-tasks-being-retrieved-warning~: Warning used to indicate that
   tasks are being retrieved in the background. It is only shown if the
   ~ivy-taskrunner-minor-mode~ is toggled on.
+- ~ivy-taskrunner-custom-command-warning~: Warning used to indicate that the user
+  does not have any custom commands for the currently visited project.
 * Supported build/taskrunner systems
 The following systems are currently supported:
 - [X] yarn/npm
