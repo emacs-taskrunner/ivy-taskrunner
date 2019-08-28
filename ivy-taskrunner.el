@@ -407,5 +407,20 @@ This function is meant to be used with `ivy' only."
       (add-hook 'projectile-after-switch-project-hook #'ivy-taskrunner--projectile-hook-function)
     (remove-hook 'projectile-after-switch-project-hook #'ivy-taskrunner--projectile-hook-function)))
 
+;; Notifications
+
+;; If the compilation function is present then that means that the Emacs using
+;; this package has notifications
+(when (fboundp 'taskrunner--compilation-notification)
+  (defun ivy-taskrunner-notifications-on ()
+    "Turn on `ivy-taskrunner' desktop notifications when a task is finished."
+    (interactive)
+    (taskrunner-notification-on))
+
+  (defun ivy-taskrunner-notifications-off ()
+    "Turn off `ivy-taskrunner' desktop notifications when a task is finished."
+    (interactive)
+    (taskrunner-notification-off)))
+
 (provide 'ivy-taskrunner)
 ;;; ivy-taskrunner.el ends here
