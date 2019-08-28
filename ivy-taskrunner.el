@@ -113,6 +113,12 @@ Please switch to a project which is recognized by projectile!"
   :group 'ivy-taskrunner
   :type 'string)
 
+(defcustom ivy-taskrunner-no-custom-commands-warning
+  "ivy-taskrunner: There are no custom commands for this project!"
+  "Warning used to indicate that there are no custom commands for the project.."
+  :group 'ivy-taskrunner
+  :type 'string)
+
 (defcustom ivy-taskrunner-prompt-before-show nil
   "Whether or not to prompt the user before showing a `ivy-taskrunner' window."
   :group 'ivy-taskrunner
@@ -346,7 +352,7 @@ for several seconds."
              custom-tasks
              :require-match t
              :action 'ivy-taskrunner--delete-selected-command)
-          (message "No custom tasks for this project!")))
+          (message ivy-taskrunner-no-custom-commands-warning)))
     (message ivy-taskrunner-project-warning)))
 
 ;;;###autoload
