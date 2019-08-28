@@ -185,7 +185,7 @@ Used to enable prompts before displaying `ivy-taskrunner'.")
 ;; caches being corrupted.
 
 (defun ivy-taskrunner--projectile-hook-function ()
-  "Collect tasks in the background when `projectile-switch-project' is called."
+  "Collect tasks in the background when the `projectile-switch-project' is used."
   (setq ivy-taskrunner--retrieving-tasks-p t)
   (taskrunner-get-tasks-async (lambda (TARGETS)
                                 (setq ivy-taskrunner--retrieving-tasks-p nil)
@@ -258,21 +258,28 @@ Prompt the user to supply extra arguments."
     (when command-directory
       (taskrunner-run-task TASK command-directory t))))
 
+;; https://github.com/emacs-taskrunner/ivy-taskrunner/issues/1
+;; This is used to silence the bytecompiler if a user installs the package
+;; without using package.el
+;; Thanks for the suggestion
+(declare-function counsel-projectile-switch-project "ext:counsel-projectile")
+
+;; Thanks to:
+;; https://stackoverflow.com/questions/7790382/how-to-determine-whether-a-package-is-installed-in-elisp
+;; for the tip about 'noerror in require
 (defun ivy-taskrunner--check-if-in-project ()
   "Check if the currently visited buffer is in a project.
 If it is not, prompt the user to select a project"
   ;; If we are not in a project, ask the user to switch to one
   (if (not (projectile-project-p))
       ;; If counsel is intalled, use that, otherwise use the default
-      ;; projectile-switch-project interface. The command returns
-      (if (package-installed-p 'counsel-projectile)
-          (progn
-            (require 'counsel-projectile)
-            ;; This code will never be reached unless ivy-projectile is
-            ;; installed but this is necessary in order to silence the
-            ;; bytecompiler warning
-            (when (fboundp 'counsel-projectile-switch-project)
-              (counsel-projectile-switch-project)))
+      ;; projectile-switch-project interface.
+      (if (require 'counsel-projectile nil 'noerror)
+          ;; This code will never be reached unless ivy-projectile is
+          ;; installed but this is necessary in order to silence the
+          ;; bytecompiler warning
+          (when (fboundp 'counsel-projectile-switch-project)
+            (counsel-projectile-switch-project))
         (projectile-switch-project))
     t))
 
