@@ -73,6 +73,11 @@ until it is deleted.
     few seconds. You are free to continue working until they do. If for some
     reason no tasks can be located, an error message will be displayed in the
     echo buffer.
+- ~ivy-taskrunner-delete-all-custom-commands~: This command will delete *all* custom
+  commands for the project if any exist.
+- ~ivy-taskrunner-delete-custom-command~: This command will display an ~ivy~
+  interface containing all of the custom commands for the project. You can then
+  select one and delete it.
 - ~ivy-taskrunner-buffers~: Every time a command is ran, a new buffer is spawned
   containing that commands output. This command displays a ivy buffer letting
   the user select one of these command buffers and use an action on it. There
@@ -81,11 +86,6 @@ until it is deleted.
   - Kill buffer
   - Kill all command buffers
 - ~ivy-taskrunner-kill-all-buffers~: Kill all command buffers.
-- ~ivy-taskrunner-delete-custom-command~: This command will display an ~ivy~
-  interface containing all of the custom commands for the project. You can then
-  select one and delete it.
-- ~ivy-taskrunner-delete-all-custom-command~: This command will delete *all* custom
-  commands for the project if any exist.
 - ~ivy-taskrunner-config-files~: The majority of taskrunner/build systems have
   some type of a configuration file associate with them(Make -> Makefile, Grunt
   -> gruntfile and so on...). When this function is invoked, a ivy buffer will
