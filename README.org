@@ -196,7 +196,7 @@ whatever you would like.
 - ~ivy-taskrunner-tasks-being-retrieved-warning~: Warning used to indicate that
   tasks are being retrieved in the background. It is only shown if the
   ~ivy-taskrunner-minor-mode~ is toggled on.
-- ~ivy-taskrunner-custom-command-warning~: Warning used to indicate that the user
+- ~ivy-taskrunner-no-custom-commands-warning~: Warning used to indicate that the user
   does not have any custom commands for the currently visited project.
 * Supported build/taskrunner systems
 The following systems are currently supported:
