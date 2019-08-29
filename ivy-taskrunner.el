@@ -276,11 +276,7 @@ If it is not, prompt the user to select a project"
       ;; If counsel is intalled, use that, otherwise use the default
       ;; projectile-switch-project interface.
       (if (require 'counsel-projectile nil 'noerror)
-          ;; This code will never be reached unless ivy-projectile is
-          ;; installed but this is necessary in order to silence the
-          ;; bytecompiler warning
-          (when (fboundp 'counsel-projectile-switch-project)
-            (counsel-projectile-switch-project))
+          (counsel-projectile-switch-project)
         (projectile-switch-project))
     t))
 
