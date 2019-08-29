@@ -4,10 +4,11 @@ a convenient way to select targets/tasks within the current project and run them
 in a custom compilation buffer.
 
 The majority of the tasks/targets are gathered by either parsing
-files(makefiles) or parsing the output of the taskrunner/build systems. This can
-sometimes be a bit slow but this is made to be a (usually) one time cost. All
-tasks retrieved are saved in a cache which persists after an emacs instance is
-killed and then loaded up again when emacs/ivy-taskrunner is started.
+files(makefiles) or parsing the output of the taskrunner/build systems which
+have the ability to list all targets/tasks in the project. This can sometimes be
+a bit slow but this is made to be a (usually) one time cost. All tasks retrieved
+are saved in a cache which persists after an Emacs instance is killed and then
+loaded up again when emacs/ivy-taskrunner is started.
 
 *Warning*: I have not worked with most of these build systems/taskrunners but
  support has been provided for them. Since my knowledge is fairly elementary, I
@@ -116,7 +117,7 @@ until it is deleted.
 
 *Warning*: The functions below are only available if you are running an Emacs
  which is compiled with notifications. If you put these in your ~init~ file and
- then use the file with an emacs which is not configured for this then calling
+ then use the file with an Emacs which is not configured for this then calling
  these will throw an error since the functions below will not be available in
  the namespace.
 - ~ivy-taskrunner-notifications-on~: Turn on notifications which are shown when a
@@ -134,9 +135,10 @@ know that they are not available at the moment. As soon as they are gathered, a
 toggled off, the function is removed from the hook.
 
 Using this minor mode is completely optional. The only benefit is that tasks are
-retrieved as soon as you switch to a project using ~projectile~.
+retrieved as soon as you switch to a project using ~projectile~ instead of being
+queried manually.
 
-The minor mode will appear in the modeline as ~IT~.
+The minor mode will appear in the modeline as ~IvT~.
 ** Variables
 Some variables of interest are:
 - ~ivy-taskrunner-preferred-js-package-manager~: Choose if you prefer npm or
@@ -207,7 +209,7 @@ The following systems are currently supported:
 - [X] Jake
 - [X] Apache ant
 - [X] mix
-- [X] leinengen
+- [X] leiningen
 - [X] rake
 - [X] Make
 - [X] CMake
@@ -228,7 +230,13 @@ The following systems are currently supported:
 - [X] cabal(Limited Support)
 ** Planning to support
 *** Features
-- Multiple build folders
+- [ ] Multiple build folders
+- [ ] Add shallow/deep support. Deep support will use ripgrep/ag/grep(whichever
+  one is available in that order) and shallow support will work very similarly
+  to the way it is done now. This is if the user does not have any of those
+  installed or they would not like to spawn too many ripgrep/ag/find processes
+  on their system which will scan the project root. Deep support will probably
+  be enabled by default but the user will still be able to override this behaviour
 *** Systems
 - [ ] Apache maven
 - [ ] [[https://waf.io/][waf]] 

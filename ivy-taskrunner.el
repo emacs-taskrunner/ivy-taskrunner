@@ -5,7 +5,7 @@
 ;; Author: Yavor Konstantinov <ykonstantinov1 AT gmail DOT com>
 ;; URL: https://github.com/emacs-taskrunner/ivy-taskrunner
 ;; Version: 0.9
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (projectile "2.0.0") (ivy "0.12.0"))
 ;; Keywords: build-system taskrunner build task-runner tasks ivy convenience
 
 ;; This file is not part of GNU Emacs.
@@ -71,6 +71,7 @@
 
 
 (require 'ivy)
+(require 'projectile)
 (require 'taskrunner)
 (require 'cl-lib)
 
@@ -275,11 +276,7 @@ If it is not, prompt the user to select a project"
       ;; If counsel is intalled, use that, otherwise use the default
       ;; projectile-switch-project interface.
       (if (require 'counsel-projectile nil 'noerror)
-          ;; This code will never be reached unless ivy-projectile is
-          ;; installed but this is necessary in order to silence the
-          ;; bytecompiler warning
-          (when (fboundp 'counsel-projectile-switch-project)
-            (counsel-projectile-switch-project))
+          (counsel-projectile-switch-project)
         (projectile-switch-project))
     t))
 
