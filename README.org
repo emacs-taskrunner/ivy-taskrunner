@@ -251,7 +251,7 @@ The following systems are currently supported:
 - [ ] msbuild(Maybe)
 * Contributors
 Thanks to these people for helping me with various aspects of this package:
- - @leungbk for helping me clean up the code and giving me advice on adding
+ - [[https://github.com/leungbk][@leungbk]] for helping me clean up the code and giving me advice on adding
    support for users which do not use ~package.el~ as their package manager.
 * Bug Reports and Echancement Requests
 If you have a bug report related to the user interface then please submit it
